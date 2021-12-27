@@ -1,0 +1,9 @@
+.article{
+    background-color: brown;
+    margin: 10px;
+}
+
+.article img{
+    width: 100px;
+    height: 100px;
+}
