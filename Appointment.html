@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en" class="h-100">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+
+    <title>Dental Health | Home Page</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="./css/bootstrap.min.css">
+
+    <!-- Custom styles -->
+    <link href="./css/style.css" rel="stylesheet" >
+  </head>
+
+  <body>
+    <header>
+      <nav class="p-lg-0 p-1 navbar navbar-expand-lg navbar-light bg-light fixed-top">
+        <div class="container">
+          <a class="navbar-brand text-capitalize" href="index.html"><span class="fw-bolder text-primary">Dental</span> <span class="text-dark">Health</span></a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ournavbar" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="ournavbar">
+            <ul class="navbar-nav mr-auto">
+              <li class="nav-item nav-link"><a class="nav-link" href="index.html">Home</a></li>
+              <li class="nav-item nav-link"><a class="nav-link" href="About.html">About Us</a></li>
+              <li class="nav-item nav-link"><a class="nav-link" href="Doctors.html">Doctors</a></li>
+              <li class="nav-item nav-link"><a class="nav-link" href="index.html#services">Our Services</a></li>
+              <li class="nav-item nav-link active"><a class="nav-link" href="Appointment.html">Book Appointment</a></li>
+              <li class="nav-item nav-link"><a class="nav-link" href="index.html#login">Login</a></li>        
+              <li class="nav-item nav-link"><a class="nav-link" href="index.html#login">Contact Us</a></li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <div class="p-5 container">
+        <h1 class="fw-bolder text-primary mb-4 text-center">Book Appointment</h1>
+        <div class="offset-md-1  col-md-10">
+          <h5 class="mb-4">Write information of your patient:</h5>
+          <form class="row g-3 needs-validation" novalidate>
+            <div class="col-md-4">
+              <label for="validationFName" class="form-label">First name</label>
+              <input type="text" class="form-control" id="validationFName" placeholder="First name" required>
+              <div class="valid-feedback">
+                Looks good!
+              </div>
+              <div class="invalid-feedback">
+                Please write an invalid first name.
+              </div>
+            </div>
+            <div class="col-md-4">
+              <label for="validationLName" class="form-label">Last name</label>
+              <input type="text" class="form-control" id="validationLName" placeholder="Last name" required>
+              <div class="valid-feedback">
+                Looks good!
+              </div>
+              <div class="invalid-feedback">
+                Please write an invalid last name.
+              </div>
+            </div>
+            <div class="col-md-4">
+              <label for="validationAge" class="form-label">Age</label>
+              <input type="number" class="form-control" id="validationAge" placeholder="Age" required>
+              <div class="valid-feedback">
+                Good!
+              </div>
+              <div class="invalid-feedback">
+                Please write an invalid Age.
+              </div>
+            </div>
+            <div class="col-md-4">
+              <label for="validationGender" class="form-label">Gender</label>
+              <select class="form-select" id="validationGender" required>
+                <option selected disabled value="">Choose...</option>
+                <option>Male</option>
+                <option>Female</option>
+              </select>
+              <div class="valid-feedback">
+                Looks good!
+              </div>
+              <div class="invalid-feedback">
+                Please select a valid Gender.
+              </div>
+            </div>
+            <div class="col-md-4">
+              <label for="validationDoctor" class="form-label">Availables Doctors</label>
+              <select class="form-select" id="validationDoctor" required>
+                <option selected disabled value="">Choose...</option>
+                <option>Dental implants</option>
+                <option>Aesthetic dental fillings</option>
+                <option>Orthodontics</option>
+                <option>Veneers and Hollywood smile</option>
+                <option>Teeth whitening</option>
+              </select>
+              <div class="valid-feedback">
+                Good!
+              </div>
+              <div class="invalid-feedback">
+                Please select a Doctor.
+              </div>
+            </div>
+            <div class="col-md-4">
+              <label for="validationService" class="form-label">Service</label>
+              <select class="form-select" id="validationService" required>
+                <option selected disabled value="">Choose...</option>
+                <option>Dental implants</option>
+                <option>Aesthetic dental fillings</option>
+                <option>Orthodontics</option>
+                <option>Veneers and Hollywood smile</option>
+                <option>Teeth whitening</option>
+              </select>
+              <div class="valid-feedback">
+                Good!
+              </div>
+              <div class="invalid-feedback">
+                Please select a Service.
+              </div>
+            </div>
+            <div class="col-6 offset-5">
+              <button class="btn btn-primary" type="submit">Submit</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </main>
+
+    <div class="clearfix"></div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="text-center">
+          <p>&middot; &copy; 2021 – 2022 Department, Inc. &middot;</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="./js/jquery-3.2.1.slim.min.js"></script>
+    <script src="./js/popper.min
+    .js" ></script>
+    <script src="./js/bootstrap.min.js" ></script>
+    <script src="./js/bootstrap.bundle.min.js"></script>
+    <script src="./js/script.js"></script>
+  </body>
+</html>
