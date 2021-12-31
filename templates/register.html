@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% block body %}
+
+
+<main>
+  <div class="p-5 container">
+    <h1 class="fw-bolder text-primary mb-4 text-center">Sign Up</h1>
+    <div class="offset-md-1  col-md-10">
+      <form action="{{ url_for('register') }}" method="post" class="row g-3 needs-validation" novalidate>
+        <div class="col-md-4">
+          <label for="validationFName" class="form-label">First name</label>
+          <input name="Fname" id="Fname" type="text" class="form-control" id="validationFName" placeholder="First name" required>
+          <div class="valid-feedback">
+            Looks good!
+          </div>
+          <div class="invalid-feedback">
+            Please choose an invalid first name.
+          </div>
+        </div>
+        <div class="col-md-4">
+          <label for="validationLName" class="form-label">Last name</label>
+          <input name="Lname" id="Lname" type="text" class="form-control" id="validationLName" placeholder="Last name" required>
+          <div class="valid-feedback">
+            Looks good!
+          </div>
+          <div class="invalid-feedback">
+            Please choose an invalid last name.
+          </div>
+        </div>
+        <div class="col-md-4">
+          <label for="validationUsername" class="form-label">Username</label>
+          <div class="input-group has-validation">
+            <span class="input-group-text" id="inputGroupPrepend">@</span>
+            <input name="username" id="username" type="text" class="form-control" id="validationUsername" placeholder="Username" aria-describedby="inputGroupPrepend" required>
+            <div class="valid-feedback">
+              Looks good!
+            </div>
+            <div class="invalid-feedback">
+              Please choose an Invalid username.
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <label for="validationEmail" class="form-label">Email</label>
+          <input name="email" id="email" type="Email" class="form-control" id="validationEmail" placeholder="Email" required>
+          <div class="valid-feedback">
+            Looks good!
+          </div>
+          <div class="invalid-feedback">
+            Please provide a valid Email.
+          </div>
+        </div>
+        <div class="col-md-3">
+          <label for="validationPass" class="form-label">Password</label>
+          <input name="password" id="password" type="password" class="form-control" id="validationPass" placeholder="Password" required>
+          <div class="valid-feedback">
+            Looks good!
+          </div>
+          <div class="invalid-feedback">
+            Please provide a valid password.
+          </div>
+        </div>
+        <div class="col-md-3">
+          <label for="validationRePass" class="form-label">Reapeat Password</label>
+          <input name="repassword" id="repassword" type="password" class="form-control" id="validationRePass" placeholder="Password" required>
+          <div class="valid-feedback">
+            Looks good!
+          </div>
+          <div class="invalid-feedback">
+            Please provide the same password.
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="invalidCheck" required>
+            <label class="form-check-label" for="invalidCheck">
+              Agree to terms and conditions
+            </label>
+            <div class="invalid-feedback">
+              You must agree before submitting.
+            </div>
+          </div>
+        </div>
+        <div class="col-6 offset-5">
+          <button class="btn btn-primary" type="submit">Sign Up</button>
+        </div>
+        <p class="text-center {{registered}}">{{ msg }}</p>
+      </form>
+    </div>
+  </div>
+</main>
+
+{% endblock %}

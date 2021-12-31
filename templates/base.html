@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en" class="h-100">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+
+    <title>Dental Health | {{titlePage}}</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+
+    <!-- Custom styles -->
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" >
+  </head>
+  <body>
+    <header>
+        <nav class="p-lg-0 p-1 navbar navbar-expand-lg navbar-light bg-light fixed-top">
+            <div class="container">
+                <a class="navbar-brand text-capitalize" href="./"><span class="fw-bolder text-primary">Dental</span> <span class="text-dark">Health</span></a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ournavbar" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="ournavbar">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item nav-link {{ActiveHome}}"><a class="nav-link" href="./">Home</a></li>
+                        <li class="nav-item nav-link {{ActiveAbout}}"><a class="nav-link" href="./About">About Us</a></li>
+                        <li class="nav-item nav-link {{ActiveDoctors}}"><a class="nav-link" href="/Doctors">Doctors</a></li>
+                        <li class="nav-item nav-link"><a class="nav-link" href="./#services">Our Services</a></li>
+                        <li class="nav-item nav-link {{ActiveApointment}}"><a class="nav-link" href="/Appointment">Book Appointment</a></li>
+                        <li class="nav-item nav-link"><a class="nav-link" href="./#login">Login</a></li>        
+                        <li class="nav-item nav-link"><a class="nav-link" href="./#login">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div>
+                    {% if session.username %}
+                        <small class="bottom">Hi <a href="/profile" class="text-primary">{{session.username}}</a>!!</small>
+                        <a href="{{ url_for('logout') }}" class="btn">Logout</a>
+                    {% else %}
+                        <a class="{{ hidden }}" href="{{ url_for('register') }}" class="btn">Dont't have an account?</a>
+                    {% endif %}
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="clearfix"></div>
+    
+    {% block body %}
+    {% endblock %}
+    
+    <div class="clearfix"></div>
+    <!-- FOOTER -->
+    <footer>
+        <div class="text-center">
+            <p>&middot; &copy; 2021 – 2022 Department, Inc. &middot;</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="{{ url_for('static', filename='js/jquery-3.2.1.slim.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/popper.min.js') }}" ></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}" ></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js//script.js') }}"></script>
+  </body>
+</html>
