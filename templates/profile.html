@@ -2,23 +2,72 @@
 {% block body %}
 
 <main>
-    <div class="p-5 container text-center">
-      <h1 class="fw-bolder text-primary">Your Profile</h1>
+    <div style="box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;" class="bg-light p-5 container">
+      <h1 class="fw-bolder text-primary text-uppercase">Your Profile</h1>
+      <div class="row">
+        <div class="table-responsive col-md-8">
+          <table class="table">
+            <tbody>
+              <tr>
+                <th scope="row">First Name :</th>
+                <td>{{ Info[1] }}</td>
+              </tr>
+              <tr>
+                <th scope="row">Last Name :</th>
+                <td>{{ Info[2] }}</td>
+              </tr>
+              <tr>
+                <th scope="row">Username :</th>
+                <td>{{ Info[3] }}</td>
+              </tr>
+              <tr>
+                <th scope="row">Password :</th>
+                <td>{{ Info[4] }}</td>
+              </tr>
+              <tr>
+                <th scope="row">Email :</th>
+                <td>{{ Info[5] }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class=" container col-md-4">
+          <div class="list-group">
+            <a href="/profile" class="list-group-item list-group-item-action active">Your information</a>
+            <a href="/Appointment" class="list-group-item list-group-item-action">Book an Appointment</a>
+          </div>
+        </div>
+
+
+      </div>
       <div class="p-3"></div>
+      <h1 class="fw-bolder text-primary text-uppercase">Your Appointments</h1>
       <div class="row">
         <div class="table-responsive col-12">
-          <table class="table">
+          <table class="table table-striped table-hover">
             <thead>
               <tr>
-                <th scope="col">attribute</th>
-                <th scope="col">value</th>
+                <th scope="col">#</th>
+                <th scope="col">Patient first name</th>
+                <th scope="col">Patient last name</th>
+                <th scope="col">Patient age</th>
+                <th scope="col">Patient gander</th>
+                <th scope="col">Doctor name</th>
+                <th scope="col">Problem</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <th scope="row">Username :</th>
-                <td>{{ session.username }}</td>
-              </tr>
+                {% for Appointment in AppointmentsTable %}
+                  <tr>
+                    <th scope="row">{{Appointment[0]}}</th>
+                    <td scope="row">{{Appointment[1]}}</td>
+                    <td scope="row">{{Appointment[2]}}</td>
+                    <td scope="row">{{Appointment[3]}}</td>
+                    <td scope="row">{{Appointment[4]}}</td>
+                    <td scope="row">{{UserDoctors[loop.index-1][1]}}</td>
+                    <td scope="row">{{UserProblems[loop.index-1][1]}}</td>
+                  </tr>
+                {% endfor %}
             </tbody>
           </table>
         </div>

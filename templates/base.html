@@ -5,20 +5,23 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
+    <link rel="icon" href="{{ url_for('static', filename='img/icon/icon.png') }}">
 
     <title>Dental Health | {{titlePage}}</title>
 
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-icons.css') }}">
 
     <!-- Custom styles -->
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" >
   </head>
   <body>
     <header>
-        <nav class="p-lg-0 p-1 navbar navbar-expand-lg navbar-light bg-light fixed-top">
+        <!-- https://getbootstrap.com/docs/5.1/components/scrollspy/#scrollspyHeading3 -->
+        <nav style="z-index: 100; opacity: .96;box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;" class="p-lg-0 p-1 navbar navbar-expand-lg navbar-light bg-light fixed-top">
             <div class="container">
-                <a class="navbar-brand text-capitalize" href="./"><span class="fw-bolder text-primary">Dental</span> <span class="text-dark">Health</span></a>
+                <a class="navbar-brand text-capitalize" href="./"><span class="fw-bolder text-primary">{{session.title}}</span></a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ournavbar" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -26,19 +29,17 @@
                     <ul class="navbar-nav mr-auto">
                         <li class="nav-item nav-link {{ActiveHome}}"><a class="nav-link" href="./">Home</a></li>
                         <li class="nav-item nav-link {{ActiveAbout}}"><a class="nav-link" href="./About">About Us</a></li>
-                        <li class="nav-item nav-link {{ActiveDoctors}}"><a class="nav-link" href="/Doctors">Doctors</a></li>
+                        <li class="nav-item nav-link {{ActiveDoctors}}"><a class="nav-link" href="/Doctors">Our Dentists</a></li>
                         <li class="nav-item nav-link"><a class="nav-link" href="./#services">Our Services</a></li>
-                        <li class="nav-item nav-link {{ActiveApointment}}"><a class="nav-link" href="/Appointment">Book Appointment</a></li>
-                        <li class="nav-item nav-link"><a class="nav-link" href="./#login">Login</a></li>        
-                        <li class="nav-item nav-link"><a class="nav-link" href="./#login">Contact Us</a></li>
                     </ul>
                 </div>
                 <div>
                     {% if session.username %}
-                        <small class="bottom">Hi <a href="/profile" class="text-primary">{{session.username}}</a>!!</small>
+                        <small class=" h6">Hi <a href="/profile" class=" link-primary fw-bold">{{session.username}}</a></small>
                         <a href="{{ url_for('logout') }}" class="btn">Logout</a>
                     {% else %}
-                        <a class="{{ hidden }}" href="{{ url_for('register') }}" class="btn">Dont't have an account?</a>
+                        <a class="link-dark text-decoration-none" href="./#login">Login</a>      
+                        <a class="" href="{{ url_for('register') }}" class="btn">Dont't have an account?</a>
                     {% endif %}
                 </div>
             </div>
@@ -54,7 +55,9 @@
     <!-- FOOTER -->
     <footer>
         <div class="text-center">
-            <p>&middot; &copy; 2021 – 2022 Department, Inc. &middot;</p>
+            <p>&middot; &copy; 2021 – 2022 Department, Inc. &middot; All rights reserved.</p>
+            <a href="https://github.com/MoErn854/Dentistry-Department-Website.git" class="fs-1 m-5"><i class="bi bi-github"></i></a>
+
         </div>
     </footer>
 

@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en" class="h-100">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+
+    <title>Dental Health | {{titlePage}}</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+
+    <!-- Custom styles -->
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" >
+  </head>
+  <body style="padding-top: 0px;">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/Admin/Home">
+                <span class="fw-bolder text-primary">Dental</span> <span class="text-secondary">Health</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" href="/Admin/Home">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Admin/doctors">Doctors</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Admin/slider">Slider images</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Admin/users">Users</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Admin/Services">Services</a>
+                    </li>
+                </ul>
+                <div>
+                    {% if session.usernameAdmin %}
+                        <small class="fw-bolder">Hi, <span class="text-primary">{{session.usernameAdmin}}</span></small>
+                        <a href="{{ url_for('logoutAdmin') }}" class="btn link-primary">Logout</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="clearfix"></div>
+
+    <main>
+        <div class="p-5 container-fluid">    
+            <main style="box-shadow: rgb(99 99 99 / 20%) 0px 2px 8px 0px;" class="p-5">
+                {% block body %}
+                {% endblock %}
+            </main>
+        </div>
+    </main>
+    
+    <div class="clearfix"></div>
+    
+    <!-- FOOTER -->
+    <footer>
+        <div class="text-center">
+            <p>&middot; &copy; 2021 – 2022 Admin Control Panel &middot;</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="{{ url_for('static', filename='js/jquery-3.2.1.slim.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/popper.min.js') }}" ></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}" ></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js//script.js') }}"></script>
+  </body>
+</html>

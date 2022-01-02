@@ -29,3 +29,8 @@
     this.className += " active";
     });
   }
+
+
+  $(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+  })

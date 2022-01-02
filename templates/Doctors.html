@@ -3,7 +3,7 @@
 
 <main>
     <div class="p-5 container text-center">
-    <h1 class="fw-bolder text-primary">Our Doctors</h1>
+    <h1 class="fw-bolder text-primary text-uppercase">Our Dentists</h1>
     <div class="p-3"></div>
         <div class="row">
             {% for doctor in DoctorsData %}
@@ -11,7 +11,7 @@
                     <div class="card">
                         <img src="{{ url_for('static', filename='img/slider/slider2.jpg') }}" class="card-img-top" alt="Card title">
                         <div class="card-body">
-                            <h5 class="card-title">{{doctor[1]}}</h5>
+                            <h6 class="card-title">{{doctor[1]}}</h6>
                             <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
                         </div>
                         <ul class="list-group list-group-flush">
@@ -21,7 +21,13 @@
                             <li class="list-group-item">{{doctor[4]}}</li>
                         </ul>
                         <div class="card-body">
-                            <a href="/Appointment" class="btn btn-primary card-link">Book Appointment with him!</a>
+                        {% if session.username %} 
+                        <a href="/Appointment" class="btn btn-primary card-link">Book Appointment with him!</a>
+                        {% else %}
+                        <span class="d-inline-block" tabindex="0" data-toggle="tooltip" title="You must be a user!">
+                            <a style="pointer-events: none;" href="/Appointment" class="btn btn-primary card-link disabled">Book Appointment with him!</a>
+                        </span>
+                        {% endif %}
                         </div>
                     </div>
                 </div>

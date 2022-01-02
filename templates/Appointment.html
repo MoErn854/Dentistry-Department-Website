@@ -2,15 +2,15 @@
 {% block body %}
 
 <main>
-  <div class="p-5 container">
-    <h1 class="fw-bolder text-primary mb-4 text-center">Book Appointment</h1>
+  <div style="box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;" class="bg-light p-5 container">
+    <h1 class="fw-bolder text-primary mb-4 text-center text-uppercase">REQUEST AN APPOINTMENT!</h1>
     {% if session.username %}
       <div class="offset-md-1  col-md-10">
         <h5 class="mb-4">Write information of your patient:</h5>
-        <form class="row g-3 needs-validation" novalidate>
+        <form action="{{ url_for('Appointment') }}" method="POST" class="row g-3 needs-validation" novalidate>
           <div class="col-md-4">
             <label for="validationFName" class="form-label">First name</label>
-            <input type="text" class="form-control" id="validationFName" placeholder="First name" required>
+            <input name="Fname" id="Fname" type="text" class="form-control" id="validationFName" placeholder="First name" required>
             <div class="valid-feedback">
               Looks good!
             </div>
@@ -20,7 +20,7 @@
           </div>
           <div class="col-md-4">
             <label for="validationLName" class="form-label">Last name</label>
-            <input type="text" class="form-control" id="validationLName" placeholder="Last name" required>
+            <input name="Lname" id="Lname" type="text" class="form-control" id="validationLName" placeholder="Last name" required>
             <div class="valid-feedback">
               Looks good!
             </div>
@@ -28,9 +28,9 @@
               Please write an invalid last name.
             </div>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-2">
             <label for="validationAge" class="form-label">Age</label>
-            <input type="number" class="form-control" id="validationAge" placeholder="Age" required>
+            <input name="Age" id="Age" type="number" class="form-control" id="validationAge" placeholder="Age" required>
             <div class="valid-feedback">
               Good!
             </div>
@@ -38,9 +38,9 @@
               Please write an invalid Age.
             </div>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-2">
             <label for="validationGender" class="form-label">Gender</label>
-            <select class="form-select" id="validationGender" required>
+            <select name="Gender" id="Gender" class="form-select" id="validationGender" required>
               <option selected disabled value="">Choose...</option>
               <option>Male</option>
               <option>Female</option>
@@ -54,13 +54,11 @@
           </div>
           <div class="col-md-4">
             <label for="validationDoctor" class="form-label">Availables Doctors</label>
-            <select class="form-select" id="validationDoctor" required>
+            <select id="Doctors" name="Doctors" class="form-select" id="validationDoctor" required>
               <option selected disabled value="">Choose...</option>
-              <option>Dental implants</option>
-              <option>Aesthetic dental fillings</option>
-              <option>Orthodontics</option>
-              <option>Veneers and Hollywood smile</option>
-              <option>Teeth whitening</option>
+              {% for doctor in DoctorsData %}
+                <option>{{ doctor[1] }}</option>
+              {% endfor %}
             </select>
             <div class="valid-feedback">
               Good!
@@ -71,13 +69,11 @@
           </div>
           <div class="col-md-4">
             <label for="validationService" class="form-label">Service</label>
-            <select class="form-select" id="validationService" required>
+            <select name="Service" id="Service" class="form-select" id="validationService" required>
               <option selected disabled value="">Choose...</option>
-              <option>Dental implants</option>
-              <option>Aesthetic dental fillings</option>
-              <option>Orthodontics</option>
-              <option>Veneers and Hollywood smile</option>
-              <option>Teeth whitening</option>
+              {% for Treat in TreatData %}
+                <option>{{ Treat[1] }}</option>
+              {% endfor %}
             </select>
             <div class="valid-feedback">
               Good!
@@ -86,14 +82,29 @@
               Please select a Service.
             </div>
           </div>
-          <div class="col-6 offset-5">
-            <button class="btn btn-primary" type="submit">Submit</button>
+          <div class="col-md-4">
+            <label for="validationDate" class="form-label">Requested Date</label>
+            <input name="Date" id="Date" type="date" class="form-control" id="validationDate" placeholder="Date" required>
+            <div class="valid-feedback">
+              Good!
+            </div>
+            <div class="invalid-feedback">
+              Please write an invalid Age.
+            </div>
           </div>
+          <div class="col-md-4">
+            <label class="form-label">The cost = </label>
+            <input readonly class="" type="text" value="{{cost[0]}}$">
+          </div>
+          <div class="col-md-4">
+            <button role="button" class="button-9 btn btn-primary" type="submit">Book Appointment</button>
+          </div>
+          <p class="text-center {{PassOrNot}}">{{ msg }}</p>
         </form>
       </div>
     {% else %}
         <h3>You must be a user !</h3>
-        <a class="{{ hidden }}" href="{{ url_for('register') }}" class="btn">Dont't have an account?</a>
+        <a href="{{ url_for('register') }}" class="btn">Dont't have an account?</a>
     {% endif %}
   </div>
 </main>
