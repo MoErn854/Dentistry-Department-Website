@@ -17,7 +17,7 @@ body {
 
   /* Sections */
   main{
-    background: rgb(208 218 225 / 43%);
+    background: rgb(248 249 250);
     /* border-bottom: 2px rgb(0 137 203) solid ; */
   }
 
@@ -34,10 +34,8 @@ body {
 
   /* Footer */
   footer{
-    background: rgba(241, 244, 255, 0.534);
-    padding: 15px 0px 1px 0px; 
-    color: rgb(0 137 203);
-    border-top: 2px solid rgb(0 137 203);
+    background: #ffffff;
+    border-top: 3px solid #0090d5;
   }
 
 
@@ -114,6 +112,112 @@ input[type=number] {
   max-width: 240px;
 }
 
+
+.main-Admin{
+  box-shadow: rgb(99 99 99 / 20%) 0px 2px 8px 0px;
+  background-color: #fff;
+}
+
+
+.carousel-H{
+  background: none !important;
+  height: auto !important;
+  min-height: 12rem !important;
+}
+
+
+.rating {
+  --dir: right;
+  --fill: gold;
+  --fillbg: rgba(100, 100, 100, 0.15);
+  --heart: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 21.328l-1.453-1.313q-2.484-2.25-3.609-3.328t-2.508-2.672-1.898-2.883-0.516-2.648q0-2.297 1.57-3.891t3.914-1.594q2.719 0 4.5 2.109 1.781-2.109 4.5-2.109 2.344 0 3.914 1.594t1.57 3.891q0 1.828-1.219 3.797t-2.648 3.422-4.664 4.359z"/></svg>');
+  --star: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 17.25l-6.188 3.75 1.641-7.031-5.438-4.734 7.172-0.609 2.813-6.609 2.813 6.609 7.172 0.609-5.438 4.734 1.641 7.031z"/></svg>');
+  --stars: 5;
+  --starsize: 3rem;
+  --symbol: var(--star);
+  --value: 1;
+  --w: calc(var(--stars) * var(--starsize));
+  --x: calc(100% * (var(--value) / var(--stars)));
+  block-size: var(--starsize);
+  inline-size: var(--w);
+  position: relative;
+  touch-action: manipulation;
+  -webkit-appearance: none;
+}
+
+.rating::-moz-range-track {
+  background: linear-gradient(to var(--dir), var(--fill) 0 var(--x), var(--fillbg) 0 var(--x));
+  block-size: 100%;
+  mask: repeat left center/var(--starsize) var(--symbol);
+}
+.rating::-webkit-slider-runnable-track {
+  background: linear-gradient(to var(--dir), var(--fill) 0 var(--x), var(--fillbg) 0 var(--x));
+  block-size: 100%;
+  mask: repeat left center/var(--starsize) var(--symbol);
+  -webkit-mask: repeat left center/var(--starsize) var(--symbol);
+}
+.rating::-moz-range-thumb {
+  height: var(--starsize);
+  opacity: 0;
+  width: var(--starsize);
+}
+.rating::-webkit-slider-thumb {
+  height: var(--starsize);
+  opacity: 0;
+  width: var(--starsize);
+  -webkit-appearance: none;
+}
+.rating {
+  display: block;
+  width: 260px;
+  margin-top: 0px;
+  background: #f8f9fa;
+}
+
+
+/* Contact Us */
+.contact form {
+  margin-top: 0px;
+  padding: 0px 30px;
+}
+.contact h3 {
+  color: #488ace;
+  text-align: center;
+  font-weight: 600;
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+.contact p {
+  margin: 0 0px 10px;
+  margin-left: 0px!important;
+}
+.contact label {
+  display: none;
+}
+.contact input {
+ width: 100%;
+  border: none;
+  border: 1px solid #dddddd78;
+  padding: 10px;
+  border-radius: 4px;
+}
+.contact textarea#message {
+  width: 100%;
+  height: 122px;
+  border: 1px solid #dddddd78;
+  border-radius: 4px;
+  padding: 10px;
+}
+.contact input#submit {
+  color: white;
+  background: linear-gradient(0.25turn,#0058b1, #71a1d4);
+  border-radius: 2px;
+  box-shadow: 0px 0px 4px 0px #00000042;
+  margin-top: 15px;
+}
+
+/* ********************** */
 /* Bootstrap Edit styles */
 .navbar {
     padding-top: 0;

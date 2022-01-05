@@ -31,8 +31,8 @@
             text-center
             {% endif %}
             ">
-              <h1>{{slide[2]}}</h1>
-              <p>{{slide[3]}}</p>
+              <h1 class="text-capitalize">{{slide[2]}}</h1>
+              <p class="lead">{{slide[3]}}</p>
             </div>
           </div>
         </div>
@@ -58,11 +58,8 @@
         <h1><span class="fw-bolder text-primary text-uppercase">{{session.title}}</span></h1>
         <figure>
           <blockquote class="blockquote">
-            <p>“Every tooth in a man's head is more valuable than a diamond.”</p>
+            <p>“{{session.short}}”</p>
           </blockquote>
-          <figcaption class="blockquote-footer">
-            Said by <cite title="Source Title">Miguel de Cervantes</cite>
-          </figcaption>
         </figure>
       </div>
       <img src="{{ url_for('static', filename='img/teeth.gif') }}" alt="teeth1" class="img-fluid col-md-4">
@@ -75,8 +72,8 @@
 <main class="cover-bg" style="background: url({{ url_for('static', filename='img/background1-svg.png') }});">
   <div class="container text-end">
     <div class="row">
-      <img src="{{ url_for('static', filename='img/teeth1.gif') }}" class="img-fluid col-md-4">
-      <div class="sectionMain col-md-8">
+      <img src="{{ url_for('static', filename='img/index1.jpg') }}" class="img-fluid col-md-5">
+      <div class="sectionMain col-md-7">
         <h1 class="text-dark text-uppercase">Why Choose to {{session.title}}?</h1>
         <ul class="lead text-start list-group">
            <li class="list-group-item-action list p-1 list-unstyled"><i class="bi bi-caret-right-fill"></i>Extensive range of dental treatments</li>
@@ -94,15 +91,35 @@
 <main class="p-5 cover-bg" style="background: url({{ url_for('static', filename='img/testimonial-bg.webp') }});">
   <div class="p-5 container text-center">
     <h1 class="fw-bolder text-primary text-uppercase">What Patients Are Saying</h1>
-    <i class="bi bi-chat-square-quote fs-2"></i>
-    <figure>
-      <blockquote class="lead fw-bolder blockquote">
-        <p>“The front office people are all really nice. I have been a patient for years now. I love seeing everyone, we always share a few stories and some laughs. It always feels like running into a great friend and catching up.”</p>
-      </blockquote>
-      <figcaption class="blockquote-footer">
-        <cite title="Source Title">Antoin</cite>
-      </figcaption>
-    </figure>
+    <div id="carouselContent" class="carousel slide" data-ride="carousel">
+      <div class="carousel-inner">
+          {% for rate in RatesTable %}
+            <div class="carousel-item carousel-H text-center 
+                        {% if loop.first %}
+                        active
+                        {% endif %}
+            p-4">
+              <i class="bi bi-chat-square-quote fs-2"></i>
+              <figure>
+                <blockquote class="lead fw-bolder blockquote">
+                  <p>“{{ rate[2] }}.”</p>
+                </blockquote>
+                <figcaption class="blockquote-footer">
+                  <cite title="Source Title">{{ users[rate[3]][1] }}</cite>
+                </figcaption>
+              </figure>
+            </div>
+          {% endfor %}
+      </div>
+   </div>
+   <button class="carousel-control-prev" type="button" data-bs-target="#carouselContent" data-bs-slide="prev">
+    <span class="bi bi-caret-left-fill text-dark fs-1" aria-hidden="true"></span>
+    <span class="visually-hidden">Previous</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#carouselContent" data-bs-slide="next">
+    <span class="bi bi-caret-right-fill text-dark fs-1" aria-hidden="true"></span>
+    <span class="visually-hidden">Next</span>
+  </button>
   </div>
 </main>
 
@@ -116,14 +133,14 @@
       {% for treat in TreatData %}
       <div class="col">
         <div class="card">
-          <img src="{{ url_for('static', filename='img/slider/slider2.jpg') }}" class="card-img-top" alt="...">
+          <img src="{{ url_for('static', filename='img/slider/Dental.jpg') }}" class="card-img-top" alt="{{treat[1]}}">
           <div class="card-body">
             <h5 class="card-title">{{treat[1]}}</h5>
-            <p class="card-text">{{treat[4]}} dscription dscript iondscr iptiondsc ripti ondscr iptio ndsc ription</p>
+            <p class="card-text">{{treat[4]}}</p>
           </div>
           <ul class="list-group list-group-flush">
             <li class="list-group-item">${{treat[2]}}</li>
-            <li class="list-group-item">{{treat[3]}} Weeks</li>
+            <li class="list-group-item">{{treat[3]}} Sessions</li>
           </ul>
           <div class="card-body">
             <style>
@@ -160,6 +177,10 @@
             Must be 8-20 characters long.
           </span>
         </div>
+        <div class="form-check">
+          <input id="doctor" name="doctor" type="checkbox" class="form-check-input">
+          <label class="form-check-label" for="doctor">Are you dentist ?</label>
+        </div>
         <div class="p-1"></div>
         <button class="btn btn-primary" type="submit">Sign In</button>
         <small class="form-text text-muted"><a href="/register">Dont't have an account?</a></small>
@@ -173,7 +194,7 @@
       col-md-6
       {% endif %}
       mt-sm-1 p-sm-5 mb-4 mb-sm-1">
-        <h2 class="fw-bolder text-primary text-uppercase">Contact Us</h2>
+        <h2 class="fw-bolder text-primary text-uppercase">Contact Information</h2>
         <p>
             <span class="fw-bolder">Mobile:</span><br/>
             {{session.phone}}

@@ -9,7 +9,9 @@
             {% for doctor in DoctorsData %}
                 <div class="col-lg-4 col-md-6 col-sm-12 mb-3 p-3">
                     <div class="card">
-                        <img src="{{ url_for('static', filename='img/slider/slider2.jpg') }}" class="card-img-top" alt="Card title">
+                        <object data="{{ url_for('static', filename='img/default-image.jpg') }}" type="image/jpg">
+                            <img src="{{doctor[7]}}" class="card-img-top" alt="{{doctor[1]}}">
+                        </object>
                         <div class="card-body">
                             <h6 class="card-title">{{doctor[1]}}</h6>
                             <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>

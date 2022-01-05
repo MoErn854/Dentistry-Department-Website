@@ -10,6 +10,7 @@
 
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-icons.css') }}">
 
     <!-- Custom styles -->
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" >
@@ -18,15 +19,18 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
             <a class="navbar-brand" href="/Admin/Home">
-                <span class="fw-bolder text-primary">Dental</span> <span class="text-secondary">Health</span>
+                <span class="fw-bolder text-primary">{{session.title}}</span> <span class="text-secondary">Control Panal</span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="{{hide}} navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 d-lg-none {{hide}}">
                     <li class="nav-item">
                         <a class="nav-link" aria-current="page" href="/Admin/Home">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" href="/Admin/General">General</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/Admin/doctors">Doctors</a>
@@ -55,9 +59,30 @@
 
     <main>
         <div class="p-5 container-fluid">    
-            <main style="box-shadow: rgb(99 99 99 / 20%) 0px 2px 8px 0px;" class="p-5">
-                {% block body %}
-                {% endblock %}
+            <main class="p-5 main-Admin">
+                <div class="row">
+                    <div class="
+                    {% if login %}
+                        col-md-12
+                    {% else %}
+                        col-md-9
+                    {% endif %}
+                    ">
+                      {% block body %}
+                      {% endblock %}
+                    </div>
+                    <div class="col-md-3 sm-none mt-2">
+                        <div class="{{hide}} list-group">
+                            <a href="/Admin/Home" class="list-group-item list-group-item-action">Home</a>
+                            <a href="/Admin/General" class="list-group-item list-group-item-action">General</a>
+                            <a href="/Admin/doctors" class="list-group-item list-group-item-action">Doctors</a>
+                            <a href="/Admin/slider" class="list-group-item list-group-item-action">Slider</a>
+                            <a href="/Admin/users" class="list-group-item list-group-item-action">Users</a>
+                            <a href="/Admin/Services" class="list-group-item list-group-item-action">Services</a>
+                        </div>
+                    </div>
+                </div>
+                
             </main>
         </div>
     </main>
@@ -65,10 +90,30 @@
     <div class="clearfix"></div>
     
     <!-- FOOTER -->
+    <!-- FOOTER -->
     <footer>
-        <div class="text-center">
-            <p>&middot; &copy; 2021 – 2022 Admin Control Panel &middot;</p>
-        </div>
+        <div class="container">
+            <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top p-1">
+              <div class="col-md-4 d-flex align-items-center">
+                <a href="/" class="mb-3 me-2 mb-md-0 text-muted text-decoration-none lh-1">
+                    <img class="bi" height="24" src="{{ url_for('static', filename='img/icon/icon.png') }}" alt="{{session.title}}" title="{{session.title}}" />
+                </a>
+                <span class="text-muted">
+                   &copy; 2021 – 2022 Department
+                </span>
+              </div>
+          
+              <ul class="nav col-md-4 justify-content-end list-unstyled d-flex">
+                <li class="ms-3">
+                    <a class="text-muted" href="https://github.com/MoErn854/Dentistry-Department-Website.git">
+                        <i style="font-size: 30px;" class="bi bi-github">
+                            <use xlink:href="#github"></use>
+                        </i>
+                    </a>
+                </li>
+              </ul>
+            </footer>
+          </div>
     </footer>
 
     <!-- Bootstrap JS -->

@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <link rel="icon" href="{{ url_for('static', filename='img/icon/icon.png') }}">
 
-    <title>Dental Health | {{titlePage}}</title>
+    <title>{{session.title}} | {{titlePage}}</title>
 
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
@@ -31,6 +31,7 @@
                         <li class="nav-item nav-link {{ActiveAbout}}"><a class="nav-link" href="./About">About Us</a></li>
                         <li class="nav-item nav-link {{ActiveDoctors}}"><a class="nav-link" href="/Doctors">Our Dentists</a></li>
                         <li class="nav-item nav-link"><a class="nav-link" href="./#services">Our Services</a></li>
+                        <li class="nav-item nav-link"><a class="nav-link {{ActiveContact}}" href="./Contact">Contact Us</a></li>
                     </ul>
                 </div>
                 <div>
@@ -54,11 +55,28 @@
     <div class="clearfix"></div>
     <!-- FOOTER -->
     <footer>
-        <div class="text-center">
-            <p>&middot; &copy; 2021 – 2022 Department, Inc. &middot; All rights reserved.</p>
-            <a href="https://github.com/MoErn854/Dentistry-Department-Website.git" class="fs-1 m-5"><i class="bi bi-github"></i></a>
-
-        </div>
+        <div class="container">
+            <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top p-1">
+              <div class="col-md-4 d-flex align-items-center">
+                <a href="/" class="mb-3 me-2 mb-md-0 text-muted text-decoration-none lh-1">
+                    <img class="bi" height="24" src="{{ url_for('static', filename='img/icon/icon.png') }}" alt="{{session.title}}" title="{{session.title}}" />
+                </a>
+                <span class="text-muted">
+                   &copy; 2021 – 2022 Department
+                </span>
+              </div>
+          
+              <ul class="nav col-md-4 justify-content-end list-unstyled d-flex">
+                <li class="ms-3">
+                    <a class="text-muted" href="https://github.com/MoErn854/Dentistry-Department-Website.git">
+                        <i style="font-size: 30px;" class="bi bi-github">
+                            <use xlink:href="#github"></use>
+                        </i>
+                    </a>
+                </li>
+              </ul>
+            </footer>
+          </div>
     </footer>
 
     <!-- Bootstrap JS -->

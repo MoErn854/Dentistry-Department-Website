@@ -3,75 +3,217 @@
 
 <main>
     <div style="box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;" class="bg-light p-5 container">
-      <h1 class="fw-bolder text-primary text-uppercase">Your Profile</h1>
-      <div class="row">
-        <div class="table-responsive col-md-8">
-          <table class="table">
-            <tbody>
-              <tr>
-                <th scope="row">First Name :</th>
-                <td>{{ Info[1] }}</td>
-              </tr>
-              <tr>
-                <th scope="row">Last Name :</th>
-                <td>{{ Info[2] }}</td>
-              </tr>
-              <tr>
-                <th scope="row">Username :</th>
-                <td>{{ Info[3] }}</td>
-              </tr>
-              <tr>
-                <th scope="row">Password :</th>
-                <td>{{ Info[4] }}</td>
-              </tr>
-              <tr>
-                <th scope="row">Email :</th>
-                <td>{{ Info[5] }}</td>
-              </tr>
-            </tbody>
-          </table>
+      {% if session.doctor %}
+        <div class="row">
+          <div class=" container col-md-3">
+            <div class="list-group">
+              <a href="/profile" class="list-group-item list-group-item-action active">Your information</a>
+            </div>
+          </div>
+          <div class="table-responsive col-md-6">
+            <h1 class="fw-bolder text-primary text-uppercase">Your Profile</h1>
+            <table class="table">
+              <tbody>
+                <tr>
+                  <th scope="row">Name :</th>
+                  <td>{{ Info[1] }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Gender :</th>
+                  <td>{{ Info[2] }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Email :</th>
+                  <td>{{ Info[3] }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Age :</th>
+                  <td>{{ Info[4] }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Degree :</th>
+                  <td>{{ Info[5] }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Telephone :</th>
+                  <td>{{ Info[6] }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Password :</th>
+                  <td>{{ Info[7] }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <object class="col-md-3 img-fluid img-thumbnail" data="{{ Info[8] }}" type="image/jpg">
+            <img class="img-fluid" src="{{ url_for('static', filename='img/default-image.jpg') }}" alt="{{ Info[1] }}" />
+          </object>
         </div>
-        <div class=" container col-md-4">
-          <div class="list-group">
-            <a href="/profile" class="list-group-item list-group-item-action active">Your information</a>
-            <a href="/Appointment" class="list-group-item list-group-item-action">Book an Appointment</a>
+        <!-- seperation line -->  
+        <div class="p-4"><hr></div>
+        <div class="row">
+          <h1 class="text-decoration-none fw-bolder text-primary text-uppercase">Your Appointments</h1>
+          <a class="text-decoration-none text-secondary" data-bs-toggle="collapse" href="#collapse-Table-Waiting" role="button" aria-expanded="false" aria-controls="collapse-Table">
+            <h3 class="fw-bolder">Waiting Appointments</h3>
+          </a>
+          <div class="collapse table-responsive col-12" id="collapse-Table-Waiting">
+            <table class="table table-striped table-hover">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Patient first name</th>
+                  <th scope="col">Patient last name</th>
+                  <th scope="col">Age</th>
+                  <th scope="col">Gander</th>
+                  <th scope="col">Problem</th>
+                  <th scope="col">Date</th>
+                  <th scope="col">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                  {% for Appointment in AppointmentsTable %}
+                    {% if not Appointment[9] == "a" and not Appointment[9] == "r" %}
+                    <tr>
+                      <th scope="row">{{Appointment[0]}}</th>
+                      <td scope="row">{{Appointment[1]}}</td>
+                      <td scope="row">{{Appointment[2]}}</td>
+                      <td scope="row">{{Appointment[3]}}</td>
+                      <td scope="row">{{Appointment[4]}}</td>
+                      <td scope="row">{{UserProblems[loop.index-1][1]}}</td>
+                      <td scope="row">{{Appointment[8]}}</td>
+                      <td scope="row">
+                        <form action="{{ url_for('ProfilePage') }}" method="post">
+                          <input class=" visually-hidden" type="int" name="id" value="{{Appointment[0]}}">
+                          <input name="status" type="submit" class="btn btn-success" value="Accept">
+                          <input name="status" type="submit" class="btn btn-danger" value="Refuse">
+                        </form>
+                      </td>
+                    </tr>
+                    {% endif %}
+                  {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          <a class="text-decoration-none text-secondary" data-bs-toggle="collapse" href="#collapse-Table-Scheduled" role="button" aria-expanded="false" aria-controls="collapse-Table">
+            <h3 class="fw-bolder">Scheduled Appointments</h3>
+          </a>
+          <div class="collapse table-responsive col-12" id="collapse-Table-Scheduled">
+            <table class="table table-striped table-hover">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Patient first name</th>
+                  <th scope="col">Patient last name</th>
+                  <th scope="col">Age</th>
+                  <th scope="col">Gander</th>
+                  <th scope="col">Problem</th>
+                  <th scope="col">Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                  {% for Appointment in AppointmentsTable %}
+                    {% if Appointment[9] == "a" %}
+                      <tr>
+                        <th scope="row">{{Appointment[0]}}</th>
+                        <td scope="row">{{Appointment[1]}}</td>
+                        <td scope="row">{{Appointment[2]}}</td>
+                        <td scope="row">{{Appointment[3]}}</td>
+                        <td scope="row">{{Appointment[4]}}</td>
+                        <td scope="row">{{UserProblems[loop.index-1][1]}}</td>
+                        <td scope="row">{{Appointment[8]}}</td>
+                      </tr>                    
+                    {% endif %}
+                  {% endfor %}
+              </tbody>
+            </table>
           </div>
         </div>
-
-
-      </div>
-      <div class="p-3"></div>
-      <h1 class="fw-bolder text-primary text-uppercase">Your Appointments</h1>
-      <div class="row">
-        <div class="table-responsive col-12">
-          <table class="table table-striped table-hover">
-            <thead>
-              <tr>
-                <th scope="col">#</th>
-                <th scope="col">Patient first name</th>
-                <th scope="col">Patient last name</th>
-                <th scope="col">Patient age</th>
-                <th scope="col">Patient gander</th>
-                <th scope="col">Doctor name</th>
-                <th scope="col">Problem</th>
-              </tr>
-            </thead>
-            <tbody>
-                {% for Appointment in AppointmentsTable %}
-                  <tr>
-                    <th scope="row">{{Appointment[0]}}</th>
-                    <td scope="row">{{Appointment[1]}}</td>
-                    <td scope="row">{{Appointment[2]}}</td>
-                    <td scope="row">{{Appointment[3]}}</td>
-                    <td scope="row">{{Appointment[4]}}</td>
-                    <td scope="row">{{UserDoctors[loop.index-1][1]}}</td>
-                    <td scope="row">{{UserProblems[loop.index-1][1]}}</td>
-                  </tr>
-                {% endfor %}
-            </tbody>
-          </table>
+      {% else %}
+        <div class="row">
+          <div class=" container col-md-3">
+            <div class="list-group">
+              <a href="/profile" class="list-group-item list-group-item-action active">Your information</a>
+              <a href="/Appointment" class="list-group-item list-group-item-action">Book an Appointment</a>
+              <a href="/Rate" class="list-group-item list-group-item-action btn-warning">Rate Us</a>
+            </div>
+          </div>
+          <div class="table-responsive col-md-6">
+            <h1 class="fw-bolder text-primary text-uppercase">Your Profile</h1>
+            <table class="table">
+              <tbody>
+                <tr>
+                  <th scope="row">First Name :</th>
+                  <td>{{ Info[1] }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Last Name :</th>
+                  <td>{{ Info[2] }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Username :</th>
+                  <td>{{ Info[3] }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Password :</th>
+                  <td>{{ Info[4] }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Email :</th>
+                  <td>{{ Info[5] }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <object class="col-md-3 img-fluid img-thumbnail" data="{{ Info[6] }}" type="image/jpg">
+            <img class="img-fluid" src="{{ url_for('static', filename='img/default-image.jpg') }}" alt="{{ Info[3] }}" />
+          </object>
         </div>
-      </div>
+        <!-- seperation line -->
+        <div class="p-4"><hr></div>
+        <div class="row">
+          <a class="text-decoration-none text-primary text-uppercase" data-bs-toggle="collapse" href="#collapse-Table" role="button" aria-expanded="false" aria-controls="collapse-Table">
+            <h1 class="fw-bolder">Your Appointments</h1>
+          </a>
+          <div class="collapse table-responsive col-12" id="collapse-Table">
+            <table class="table table-striped table-hover">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Patient first name</th>
+                  <th scope="col">Patient last name</th>
+                  <th scope="col">Age</th>
+                  <th scope="col">Gander</th>
+                  <th scope="col">Doctor name</th>
+                  <th scope="col">Problem</th>
+                  <th scope="col">Problem</th>
+                  <th scope="col">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                  {% for Appointment in AppointmentsTable %}
+                    <tr>
+                      <th scope="row">{{Appointment[0]}}</th>
+                      <td scope="row">{{Appointment[1]}}</td>
+                      <td scope="row">{{Appointment[2]}}</td>
+                      <td scope="row">{{Appointment[3]}}</td>
+                      <td scope="row">{{Appointment[4]}}</td>
+                      <td scope="row">{{UserDoctors[loop.index-1][1]}}</td>
+                      <td scope="row">{{UserProblems[loop.index-1][1]}}</td>
+                      <td scope="row">{{Appointment[8]}}</td>
+                      <td scope="row">
+                        {% if Appointment[9] == "a" %}
+                          <i class="text-success bi bi-check2"></i>
+                        {% else %}
+                          <i class="text-danger bi bi-exclamation-triangle"></i>
+                        {% endif %}
+                      </td>
+                    </tr>
+                  {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      {% endif %}
     </div>
 </main>
 

@@ -4,6 +4,29 @@ import mysql.connector
 import re
 from werkzeug.utils import secure_filename
 import json
+import random
+import string
+from flask_wtf import FlaskForm
+from wtforms import StringField, BooleanField, TextAreaField, SubmitField
+import pandas as pd
+from flask_mail import Mail, Message
+
+class ContactForm(FlaskForm):
+    name = StringField("Name")
+    email = StringField("Email")
+    subject = StringField("Subject")
+    message = TextAreaField("Message")
+    submit = SubmitField("Send")
+
+
+# Generate random password
+def get_random_number():
+    length = random.randint(10,15)
+    # choose from all lowercase letter
+    numbers = string.digits
+    result_str = ''.join(random.choice(numbers) for i in range(length))
+    return result_str
+
 
 # Connect Database
 mydb = mysql.connector.connect(
@@ -14,7 +37,6 @@ mydb = mysql.connector.connect(
 )
 
 mycursor = mydb.cursor(buffered=True)
-
 
 # Retrieve all information about app
 mycursor.execute("SELECT * FROM siteInfo")
@@ -32,64 +54,128 @@ DoctorsTable = mycursor.fetchall()
 mycursor.execute("SELECT * FROM treatments")
 TreatTable = mycursor.fetchall()
 
+# Retrieve all Rates data
+mycursor.execute("SELECT * FROM Rates order by id desc limit 10")
+RatesTable = mycursor.fetchall()
+
+# Retrieve all information about app
+mycursor.execute("SELECT * FROM users")
+users = mycursor.fetchall()
+
+
+
 # Our Website
 website = Flask(__name__)
 UPLOAD_FOLDER = '/Static/img/' # {{ url_for('static', filename='img/') }}
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 
 website.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-website.secret_key = '01140345493Mm'
+website.secret_key = '***********'
+
 
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
+website.config.update(dict(
+    MAIL_SERVER = 'smtp.googlemail.com',
+    MAIL_PORT = 465,
+    MAIL_USE_TLS = False,
+    MAIL_USE_SSL = True,
+    MAIL_USERNAME = siteInfoTable[3],
+    MAIL_PASSWORD = '**************'
+))
+mail = Mail(website)
+
 """ Routes of Pages """
 # Home Page
 @website.route("/", methods =['GET', 'POST'])
 def HomePage():
 
-  # Retrieve slider images
-  mycursor.execute("SELECT * FROM slider")
-  sliderImg = mycursor.fetchall()
-
+  # Identify site's information
   session['title'] = siteInfoTable[1]
   session['address'] = siteInfoTable[2]
   session['email'] = siteInfoTable[3]
   session['phone'] = siteInfoTable[4]
   session['discr'] = siteInfoTable[5]
-  # Retrieve all treatments data
+  session['short'] = siteInfoTable[7]
+
+  # Retrieve All slider's images
+  mycursor.execute("SELECT * FROM slider")
+  sliderImg = mycursor.fetchall()
+
+  # Retrieve all treatments' data
   mycursor.execute("SELECT * FROM treatments")
   TreatTable = mycursor.fetchall()
+
   msg = ""
+
+  # If login
   if request.method == 'POST' and 'email' in request.form and 'password' in request.form:
+    
+    doctor = request.form.get('doctor')
     email = request.form['email']
     password = request.form['password']
 
-    mycursor.execute('SELECT * FROM users WHERE email = %s AND password = %s', (email, password, ))
-    user = mycursor.fetchone()
-    if user:
-              session['loggedin'] = True
-              session['id'] = user[0]
-              session['username'] = user[3]
-              msg = 'Logged in successfully !'
-              return redirect(url_for('ProfilePage'))
-    else:
-        msg = 'Incorrect email or password !'
-        return render_template("index.html",
-                        titlePage="Homepage", 
-                        ActiveHome="active", 
-                        msg = msg, 
-                        TreatData=TreatTable,
-                        sliderImg=sliderImg)
+    if doctor == 'on' :
+      # If doctor
+      mycursor.execute('SELECT * FROM doctors WHERE D_Email = %s AND password = %s', (email, password, ))
+      doctor = mycursor.fetchone()
+      if doctor:
+        # If info of doctor is right
+          session['loggedin'] = True
+          session['id'] = doctor[0]
+          session['username'] = doctor[3]
+          session['doctor'] = True
+          msg = 'Logged in successfully !'
+          
+          return redirect(url_for('ProfilePage'))
+
+      else:
+        # If info is Wrong
+          msg = 'Incorrect email or password !'
+          return render_template("index.html",
+                          titlePage="Homepage", 
+                          ActiveHome="active", 
+                          msg = msg, 
+                          TreatData=TreatTable,
+                          sliderImg=sliderImg,
+                          RatesTable=RatesTable,
+                          users=users)
+    else :
+      # If normal user
+      mycursor.execute('SELECT * FROM users WHERE email = %s AND password = %s', (email, password, ))
+      user = mycursor.fetchone()
+      if user:
+                session['loggedin'] = True
+                session['id'] = user[0]
+                session['username'] = user[3]
+                session['doctor'] = False
+
+                msg = 'Logged in successfully !'
+                return redirect(url_for('ProfilePage'))
+
+      else:
+          msg = 'Incorrect email or password !'
+          return render_template("index.html",
+                          titlePage="Homepage", 
+                          ActiveHome="active", 
+                          msg = msg, 
+                          TreatData=TreatTable,
+                          sliderImg=sliderImg,
+                          RatesTable=RatesTable,
+                          users=users)
+
   else:
     return render_template("index.html",
                         titlePage="Homepage", 
                         ActiveHome="active", 
                         msg = msg, 
                         TreatData=TreatTable,
-                        sliderImg=sliderImg)
+                        sliderImg=sliderImg,
+                        RatesTable=RatesTable,
+                        users=users)
 
 # About Us
 @website.route("/About")
@@ -99,7 +185,9 @@ def AboutUsPage():
   siteInfoTable = mycursor.fetchone()
   return render_template("about.html", 
                           titlePage="About Us", 
-                          ActiveAbout="active")
+                          ActiveAbout="active",
+                          users=users)
+
 
 # Doctors
 @website.route("/Doctors")
@@ -111,6 +199,7 @@ def DoctorsPage():
                           titlePage="Our Dentists", 
                           ActiveDoctors="active",
                           DoctorsData=DoctorsTable)
+
 
 # Appointments
 @website.route("/Appointment", methods=['GET', 'POST'])
@@ -127,6 +216,7 @@ def Appointment():
         Doctors = request.form['Doctors']
         Service = request.form['Service']
         userId = session['id']
+        Date = request.form['Date']
 
         # Display Cost
         mycursor.execute('SELECT Tcost FROM treatments where TName = %s',(Service,))
@@ -141,7 +231,7 @@ def Appointment():
         mycursor.execute('SELECT * FROM appointments')
         mycursor.fetchall()
         number_of_rows = mycursor.rowcount
-        mycursor.execute("INSERT INTO appointments VALUES (%s, %s, %s, %s, %s, %s, %s, %s)", (number_of_rows+1 ,Fname, Lname, Age, Gender, DSSN[0], ServiceId[0], userId ))
+        mycursor.execute("INSERT INTO appointments VALUES (%s, %s, %s, %s, %s, %s, %s, %s,%s, %s)", (number_of_rows+1 ,Fname, Lname, Age, Gender, DSSN[0], ServiceId[0], userId, Date, "n" ))
         mydb.commit()
         msg = 'You have successfully booked an appointment!'
         PassOrNot = "text-success"
@@ -167,13 +257,14 @@ def Appointment():
 def register():
     msg = ''
     PassOrNot = "text-danger"
-    if request.method == 'POST' and 'Fname' in request.form and 'Lname' in request.form and 'username' in request.form and 'password' in request.form and 'repassword' in request.form and 'email' in request.form :
+    if request.method == 'POST' :
         Fname = request.form['Fname']
         Lname = request.form['Lname']
         username = request.form['username']
         password = request.form['password']
         repassword = request.form['repassword']
         email = request.form['email']
+        image = request.files["file"]
 
         mycursor.execute('SELECT * FROM users WHERE username = %s', (username, ))
         user = mycursor.fetchone()
@@ -188,6 +279,9 @@ def register():
         elif not repassword == password :
             msg = 'Please Enter  the same password !'
         else:
+            path = "static/img/UsersProfile/" + secure_filename(image.filename)
+            image.save(path)
+
             mycursor.execute('SELECT * FROM users')
             mycursor.fetchall()
             number_of_rows = mycursor.rowcount
@@ -204,26 +298,58 @@ def register():
                             hidden="d-none")
 
 # User Profile
-@website.route("/profile")
+@website.route("/profile", methods =['GET', 'POST'])
 def ProfilePage():
   if session['username']:
-    mycursor.execute("select * from Appointments where userId = %s",(session['id'],))
-    AppointmentsTable = mycursor.fetchall()
+    if session['doctor'] :
+      mycursor.execute("select * from Appointments where DSSN = %s",(session['id'],))
+      AppointmentsTable = mycursor.fetchall()
 
-  mycursor.execute('SELECT * FROM users WHERE username = %s', (session['username'], ))
-  UserInfo = mycursor.fetchone()
+      mycursor.execute('SELECT * FROM doctors WHERE D_email = %s', (session['username'], ))
+      UserInfo = mycursor.fetchone()
 
-  UserProblems = []
-  UserDoctors = []
-  for Appointment in AppointmentsTable :
-    mycursor.execute('SELECT * FROM Doctors WHERE SSN = %s', (Appointment[5], ))
-    D_Name = mycursor.fetchone()
-    
-    mycursor.execute('SELECT * FROM treatments WHERE id = %s', (Appointment[6], ))
-    T_Name = mycursor.fetchone()
+      UserProblems = []
+      UserDoctors = []
+      for Appointment in AppointmentsTable :
+        mycursor.execute('SELECT * FROM users WHERE id = %s', (Appointment[7], ))
+        D_Name = mycursor.fetchone()
+        
+        mycursor.execute('SELECT * FROM treatments WHERE id = %s', (Appointment[6], ))
+        T_Name = mycursor.fetchone()
 
-    UserProblems.append(T_Name)
-    UserDoctors.append(D_Name)
+        UserProblems.append(T_Name)
+        UserDoctors.append(D_Name)
+
+      # ------------------------- #
+      if request.method == 'POST' :
+        id = request.form['id']
+        if request.form['status'] == 'Accept':
+          print(id)
+          mycursor.execute('update appointments set App_status="a" WHERE id = %s', (id, ))
+        else:
+          mycursor.execute('update appointments set App_status="r" WHERE id = %s', (id, ))
+      
+        mydb.commit()
+
+    else:
+      
+      mycursor.execute("select * from Appointments where userId = %s",(session['id'],))
+      AppointmentsTable = mycursor.fetchall()
+
+      mycursor.execute('SELECT * FROM users WHERE username = %s', (session['username'], ))
+      UserInfo = mycursor.fetchone()
+
+      UserProblems = []
+      UserDoctors = []
+      for Appointment in AppointmentsTable :
+        mycursor.execute('SELECT * FROM Doctors WHERE SSN = %s', (Appointment[5], ))
+        D_Name = mycursor.fetchone()
+        
+        mycursor.execute('SELECT * FROM treatments WHERE id = %s', (Appointment[6], ))
+        T_Name = mycursor.fetchone()
+
+        UserProblems.append(T_Name)
+        UserDoctors.append(D_Name)
 
   return render_template("profile.html",
                         titlePage=session['username'], 
@@ -232,14 +358,77 @@ def ProfilePage():
                         UserProblems=UserProblems,
                         UserDoctors=UserDoctors )
 
+# Doctors
+@website.route("/Contact", methods=["GET", "POST"])
+def ContactUs():
+  msg = ""
+  form = ContactForm()
+  if request.method == 'POST':
+      name = request.form["name"]
+      email = request.form["email"]
+      subject = request.form["subject"]
+      message = request.form["message"]
+
+      msg = Message(subject, sender=email, recipients=[siteInfoTable[3]])
+      msg.body = "From " + email + " :\n" + name + " says : \n" + message
+      mail.send(msg)
+      
+      msg = "Thanks for the message!!"
+      
+      return render_template("contact.html", 
+                              titlePage="Contact Us", 
+                              form=form,
+                              ActiveContact="Active",
+                              msg=msg)
+
+  return render_template("contact.html", 
+                              titlePage="Contact Us", 
+                              form=form,
+                              ActiveContact="Active",
+                              msg=msg)
+  
+  
+
 # Logout
 @website.route('/logout')
 def logout():
     session.pop('loggedin', None)
     session.pop('id', None)
     session.pop('username', None)
+    session.pop('doctor', None)
+
     return redirect(url_for('HomePage'))
 
+# Rate Us
+@website.route("/Rate", methods=['GET', 'POST'])
+def RateUs():
+    msg = ""
+    Tcost = 0
+    PassOrNot = "text-danger"
+
+    if request.method == 'POST' :
+        rating = request.form['rating']
+        message = request.form['message']
+        userId = session['id']
+        
+        mycursor.execute('SELECT * FROM rates')
+        mycursor.fetchall()
+        number_of_rows = mycursor.rowcount
+        mycursor.execute("INSERT INTO Rates VALUES (%s, %s, %s, %s)", (number_of_rows+1 ,rating, message,userId))
+        mydb.commit()
+
+        msg = 'Thanks!'
+        PassOrNot = "text-success"
+
+    # Retrieve all doctors data
+    mycursor.execute("SELECT * FROM Rates")
+    RatesTable = mycursor.fetchall()
+    
+    return render_template("rate.html", 
+                          titlePage="Rate Us", 
+                          RateData=RatesTable,
+                          msg=msg, 
+                          PassOrNot=PassOrNot)
 
 ################################################################
 
@@ -255,6 +444,10 @@ def Admin():
 
 @website.route('/Admin/', methods=['GET', 'POST'])
 def login():
+
+  if 'loggedinAdmin' in session:
+    return redirect(url_for('Admin'))
+  else :
     # Output message if something goes wrong...
     msg = ''
     # Check if "username" and "password" POST requests exist (user submitted form)
@@ -278,7 +471,10 @@ def login():
             # Account doesnt exist or username/password incorrect
             msg = 'Incorrect username/password!'
     # Show the login form with message (if any)
-    return render_template('Admin/index.html', msg=msg, titlePage="Admin Control Panel")
+    return render_template('Admin/index.html', 
+                            msg=msg, 
+                            titlePage="Admin Control Panel",hide="d-none",login=True)
+
 
 @website.route('/Admin/logout')
 def logoutAdmin():
@@ -289,33 +485,43 @@ def logoutAdmin():
    # Redirect to login page
    return redirect(url_for('login'))
 
+
 @website.route('/Admin/doctors', methods=['GET', 'POST'])
 def doctors():
   # Check if user is loggedin
     if 'loggedinAdmin' in session:
       msg = ''
       PassOrNot = "text-danger"
-      if request.method == 'POST' and 'SSN' in request.form and 'Name' in request.form and 'Telephone' in request.form and 'Gender' in request.form and 'Email' in request.form and 'Age' in request.form and 'Degree' in request.form :
+      if request.method == 'POST' :
           SSN = request.form['SSN']
+          file = request.files['file']
           Name = request.form['Name']
           Telephone = request.form['Telephone']
           Gender = request.form['Gender']
           Email = request.form['Email']
           Age = request.form['Age']
           Degree = request.form['Degree']
+          Password = get_random_number()
+          Password = int(Password)
 
           mycursor.execute('SELECT * FROM doctors WHERE SSN = %s', (SSN, ))
           D_SSN = mycursor.fetchone()
           mycursor.execute('SELECT * FROM doctors WHERE D_Email = %s', (Email, ))
           emailAdd = mycursor.fetchone()
+
+          # Check if SSN is repeated
           if D_SSN:
               msg = 'SSN already exists !'
+          # Check if Email is repeated
           elif emailAdd :
               msg = 'Email already exists !'
+          # Check if name contains only characters
           elif not re.match(r'[A-Za-z]+', Name):
               msg = 'Name must contain only characters'
           else:
-              mycursor.execute("INSERT INTO doctors VALUES (%s, %s, %s, %s, %s, %s, %s)", (SSN ,Name, Gender, Email, Age, Degree,Telephone ))
+              path = "static/img/doctorsProfile/" + secure_filename(file.filename)
+              file.save(path)
+              mycursor.execute("INSERT INTO doctors VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)", (SSN, Name, Gender, Email, Age, Degree,Telephone, Password, path))
               mydb.commit()
               msg = 'You have successfully Added Doctor.'
               PassOrNot = "text-success"
@@ -329,6 +535,33 @@ def doctors():
     # User is not loggedin redirect to login page
     return redirect(url_for('login'))
 
+@website.route('/Admin/General', methods=['GET', 'POST'])
+def generalAdmin():
+  if 'loggedinAdmin' in session:
+    msg = ''
+    if request.method == 'POST':
+        titlew = request.form['title']
+        icon = request.files['icon']
+        short = request.form['short']
+        telephone = request.form['telephone']
+        address = request.form['address']
+        email = request.form['email']
+        long = request.form['long'] 
+
+        path = "static/img/icon/icon.png" 
+        icon.save(path)
+
+        mycursor.execute("UPDATE siteinfo SET title=%s, address=%s, email=%s, phone=%s, discr=%s, icon=%s, short=%s where id=1", (titlew, address, email, telephone, long, path, short))
+        mydb.commit()
+        msg = 'Updated successfully, please restart the website to update the changes.'
+
+    # Retrieve slider images
+    mycursor.execute("SELECT * FROM siteinfo")
+    siteinfo = mycursor.fetchone()
+    
+    return render_template('Admin/general.html', msg=msg,titlePage="Site Info Control Panel",siteinfo=siteinfo)
+
+  return redirect(url_for('login'))
 
 @website.route('/Admin/slider', methods=['GET', 'POST'])
 def sliderAdmin():
@@ -356,7 +589,6 @@ def sliderAdmin():
 
   return redirect(url_for('login'))
 
-
 @website.route('/Admin/users', methods=['GET', 'POST'])
 def usersAdmin():
   if 'loggedinAdmin' in session:    
@@ -377,12 +609,14 @@ def servicesAdmin():
           Name = request.form['Name']
           Cost = request.form['Cost']
           Duration = request.form['Duration']
+          Description = request.form['Description']
+
           mycursor.execute('SELECT * FROM treatments')
           mycursor.fetchall()
           number_of_rows = mycursor.rowcount
-          mycursor.execute("INSERT INTO treatments VALUES (%s, %s, %s, %s)", (number_of_rows+1 ,Name, Cost, Duration))
+          mycursor.execute("INSERT INTO treatments VALUES (%s, %s, %s, %s, %s)", (number_of_rows+1 ,Name, Cost, Duration, Description))
           mydb.commit()
-          msg = 'You Have Successfully Added New Services.'
+          msg = 'You Have Successfully Added New Service.'
           PassOrNot = "text-success"
       
       # Update all doctors data
