@@ -88,7 +88,7 @@
 
 <div class="seperate"></div>
 
-<main class="p-5 cover-bg" style="background: url({{ url_for('static', filename='img/testimonial-bg.webp') }});">
+<main class="{% if RatesTable|length == 0 %}d-none{% endif %} p-5 cover-bg" style="background: url({{ url_for('static', filename='img/testimonial-bg.webp') }});">
   <div class="p-5 container text-center">
     <h1 class="fw-bolder text-primary text-uppercase">What Patients Are Saying</h1>
     <div id="carouselContent" class="carousel slide" data-ride="carousel">
@@ -102,7 +102,7 @@
               <i class="bi bi-chat-square-quote fs-2"></i>
               <figure>
                 <blockquote class="lead fw-bolder blockquote">
-                  <p>“{{ rate[2] }}.”</p>
+                  <p>“{{ rate[1] }}.”</p>
                 </blockquote>
                 <figcaption class="blockquote-footer">
                   <cite title="Source Title">{{ users[rate[3]][1] }}</cite>
@@ -123,9 +123,9 @@
   </div>
 </main>
 
-<div class="seperate"></div>
+<div class="{% if RatesTable|length == 0 %}d-none{% endif %} seperate"></div>
 
-<main class="cover-bg" style="background: url({{ url_for('static', filename='img/background1.svg') }});" id="services">  
+<main class="cover-bg {% if TreatData|length == 0 %}d-none{% endif %}" style="background: url({{ url_for('static', filename='img/background1.svg') }});" id="services">  
   <div class="p-5 container text-center">
     <h1 class="fw-bolder text-dark text-uppercase">TREATMENTS AND SERVICES</h1>
     <div class="p-3"></div>
@@ -163,7 +163,7 @@
   </div>
 </main>
 
-<div class="seperate"></div>
+<div class="{% if TreatData|length == 0 %}d-none{% endif %} seperate"></div>
 
 <main class="cover-bg" style="background: url({{ url_for('static', filename='img/background.svg') }});">
   <div class="container">

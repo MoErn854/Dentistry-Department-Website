@@ -8,13 +8,13 @@
         <form enctype=multipart/form-data action="{{ url_for('generalAdmin') }}" method="post" class="row g-1 needs-validation">
             <div class="mb-3">
                 <label for="title" class="form-label">Title</label>
-                <input name="title" id="title" type="text" class="form-control" value="{{siteinfo[1]}}">
+                <input name="title" id="title" type="text" class="form-control" value="{{siteinfo[0]}}">
             </div>
             <div class="mb-3">
                 <label for="icon" class="form-label">Icon</label>
                 <div class="row">
                     <div class="col-md-11">
-                        <input id="icon" name="icon" type="file" class="form-control" value="{{siteinfo[2]}}">
+                        <input id="icon" name="icon" type="file" class="form-control" value="{{siteinfo[6]}}">
                     </div>
                     <div class="col-md-1">
                         <img class="img-fluid img-thumbnail" width="50px" height="50px" src="{{ url_for('static', filename='img/icon/icon.png') }}" alt="icon" />
@@ -22,20 +22,20 @@
                 </div>    
             </div>
             <div class="mb-3">
-                <label for="short" class="form-label">Short description</label>
-                <input id="short" name="short" type="text" class="form-control" value="{{siteinfo[7]}}" required>
-            </div>
-            <div class="mb-3">
-                <label for="telephone" class="form-label">Telephone</label>
-                <input id="telephone" name="telephone" type="text" class="form-control" value="{{siteinfo[4]}}" required>
-            </div>
-            <div class="mb-3">
                 <label for="address" class="form-label">Address</label>
-                <input id="address" name="address" type="text" class="form-control" value="{{siteinfo[2]}}" required>
+                <input id="address" name="address" type="text" class="form-control" value="{{siteinfo[1]}}" required>
             </div>
             <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
-                <input id="email" name="email" type="Email" class="form-control" value="{{siteinfo[3]}}" required>
+                <input id="email" name="email" type="Email" class="form-control" value="{{siteinfo[2]}}" required>
+            </div>
+            <div class="mb-3">
+                <label for="phone" class="form-label">Phone</label>
+                <input id="phone" name="phone" type="text" class="form-control" value="{{siteinfo[3]}}" required>
+            </div>
+            <div class="mb-3">
+                <label for="short" class="form-label">Short description</label>
+                <input id="short" name="short" type="text" class="form-control" value="{{siteinfo[4]}}" required>
             </div>
             <div class="mb-3">
                 <label for="long" class="form-label">Long description</label>
@@ -43,7 +43,7 @@
             </div>
             <p class="text-center {{registered}}">{{ msg }}</p>
             <div class="mb-3">
-                <button class="btn btn-primary" type="submit">Update</button>
+                <button class="btn btn-primary" type="submit">Update Information</button>
             </div>
         </form>
 {% endblock %}

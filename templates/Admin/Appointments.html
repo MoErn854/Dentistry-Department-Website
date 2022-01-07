@@ -10,20 +10,21 @@
     <thead>
       <tr>
         <th scope="col">#</th>
-        <th scope="col">Patient first name</th>
-        <th scope="col">Patient last name</th>
-        <th scope="col">Age</th>
-        <th scope="col">Gander</th>
-        <th scope="col">Doctor</th>
-        <th scope="col">Problem</th>
-        <th scope="col">User</th>
-        <th scope="col">Date</th>
-        <th scope="col">Status</th>
+          <th scope="col">SSN</th>
+          <th scope="col">Patient First Name</th>
+          <th scope="col">Patient Middle Name</th>
+          <th scope="col">Patient Last Name</th>
+          <th scope="col">Age</th>
+          <th scope="col">Gender</th>
+          <th scope="col">Doctor name</th>
+          <th scope="col">Service</th>
+          <th scope="col">Username</th>
+          <th scope="col">Status</th>
       </tr>
     </thead>
     <tbody>
         {% for Appointment in AppointmentsTable %}
-          {% if Appointment[9] == "w" or Appointment[9] == "n" %}
+          {% if Appointment[9] == "Waiting" %}
           <tr>
             <th scope="row">{{Appointment[0]}}</th>
             <td scope="row">{{Appointment[1]}}</td>
@@ -32,8 +33,9 @@
             <td scope="row">{{Appointment[4]}}</td>
             <td scope="row">{{Appointment[5]}}</td>
             <td scope="row">{{Appointment[6]}}</td>
-            <td scope="row">{{Appointment[7]}}</td>
-            <td scope="row">{{Appointment[8]}}</td>
+            <td scope="row">{{Doctors[loop.index-1][2] + " " + Doctors[loop.index-1][3] + " " + Doctors[loop.index-1][4]}}</td>
+            <td scope="row">{{Treatments[loop.index-1][2]}}</td>
+            <td scope="row">{{Treatments[loop.index-1][2]}}</td>
             <td scope="row">
               <form action="{{ url_for('appointmentsAdmin') }}" method="post">
                 <input class="visually-hidden" type="int" name="id" value="{{Appointment[0]}}">

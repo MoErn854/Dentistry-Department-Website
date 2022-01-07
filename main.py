@@ -1,6 +1,5 @@
 #Imports
 from typing import Dict
-from dns.rdatatype import NULL
 from flask import Flask,flash, render_template, request, redirect, url_for, session
 import mysql.connector
 import re
@@ -24,7 +23,7 @@ class ContactForm(FlaskForm):
 """Functions"""
 # Generate random password
 def get_random_number():
-    length = random.randint(10,15)
+    length = random.randint(8,10)
     # choose from all lowercase letter
     numbers = string.digits
     result_str = ''.join(random.choice(numbers) for i in range(length))
@@ -37,14 +36,16 @@ mydb = mysql.connector.connect(
   host="localhost",
   user="root",
   passwd="root",
-  database="dentalhealth"
+  database="stomology-dep"
 )
 # Initialize our cursor
 mycursor = mydb.cursor(buffered=True)
 
+#--------------------------------------------------------------------------#
+
 """Retrive Database Tables"""
-# Retrieve all information about app
-mycursor.execute("SELECT * FROM siteInfo")
+# Retrieve all information about site
+mycursor.execute("SELECT * FROM site_information")
 siteInfoTable = mycursor.fetchone()
 
 # Retrieve slider images
@@ -52,7 +53,7 @@ mycursor.execute("SELECT * FROM slider")
 sliderImg = mycursor.fetchall()
 
 # Retrieve all doctors data
-mycursor.execute("SELECT * FROM Doctors")
+mycursor.execute("SELECT * FROM doctors")
 DoctorsTable = mycursor.fetchall()
 
 # Retrieve all treatments data
@@ -60,7 +61,7 @@ mycursor.execute("SELECT * FROM treatments")
 TreatTable = mycursor.fetchall()
 
 # Retrieve all Rates data
-mycursor.execute("SELECT * FROM Rates order by id desc limit 10")
+mycursor.execute("SELECT * FROM rates limit 10")
 RatesTable = mycursor.fetchall()
 
 # Retrieve all information about app
@@ -69,9 +70,11 @@ users = mycursor.fetchall()
 
 #--------------------------------------------------------------------------#
 
+
 """Our Website"""
 website = Flask(__name__)
 website.secret_key = '**************' # Put your Secret_Key
+
 
 # Initilize contact us information
 website.config.update(dict(
@@ -79,7 +82,7 @@ website.config.update(dict(
     MAIL_PORT = 465,
     MAIL_USE_TLS = False,
     MAIL_USE_SSL = True,
-    MAIL_USERNAME = siteInfoTable[3],
+    MAIL_USERNAME = siteInfoTable[2],
     MAIL_PASSWORD = '**************' # Put your password of email
 ))
 mail = Mail(website)
@@ -98,18 +101,20 @@ def allowed_file(filename):
 
 #--------------------------------------------------------------------------#
 
+
+
 """ Routes of Pages """
 # Home Page
 @website.route("/", methods =['GET', 'POST'])
 def HomePage():
 
   # Identify site's information
-  session['title'] = siteInfoTable[1]
-  session['address'] = siteInfoTable[2]
-  session['email'] = siteInfoTable[3]
-  session['phone'] = siteInfoTable[4]
-  session['discr'] = siteInfoTable[5]
-  session['short'] = siteInfoTable[7]
+  session['title'] = siteInfoTable[0]
+  session['address'] = siteInfoTable[1]
+  session['email'] = siteInfoTable[2]
+  session['phone'] = siteInfoTable[3]
+  session['short'] = siteInfoTable[4]
+  session['long'] = siteInfoTable[5]
 
   # Retrieve All slider's images
   mycursor.execute("SELECT * FROM slider")
@@ -120,9 +125,8 @@ def HomePage():
   TreatTable = mycursor.fetchall()
 
   msg = ""
-
   # If login
-  if request.method == 'POST' and 'email' in request.form and 'password' in request.form:
+  if request.method == 'POST' :
     
     doctor = request.form.get('doctor')
     email = request.form['email']
@@ -136,7 +140,8 @@ def HomePage():
         # If info of doctor is right
           session['loggedin'] = True
           session['id'] = doctor[0]
-          session['username'] = doctor[3]
+          session['ssn'] = doctor[1]
+          session['username'] = doctor[8]
           session['doctor'] = True
           msg = 'Logged in successfully !'
           
@@ -160,7 +165,7 @@ def HomePage():
       if user:
                 session['loggedin'] = True
                 session['id'] = user[0]
-                session['username'] = user[3]
+                session['username'] = user[5]
                 session['doctor'] = False
 
                 msg = 'Logged in successfully !'
@@ -187,11 +192,12 @@ def HomePage():
                         RatesTable=RatesTable,
                         users=users)
 
+
 # About Us
 @website.route("/About")
 def AboutUsPage():
   # Retrieve all information about app
-  mycursor.execute("SELECT * FROM siteInfo")
+  mycursor.execute("SELECT * FROM site_information")
   siteInfoTable = mycursor.fetchone()
   return render_template("about.html", 
                           titlePage="About Us", 
@@ -199,11 +205,12 @@ def AboutUsPage():
                           users=users)
 
 
+
 # Doctors
 @website.route("/Doctors")
 def DoctorsPage():
   # Retrieve all doctors data
-  mycursor.execute("SELECT * FROM Doctors")
+  mycursor.execute("SELECT * FROM doctors")
   DoctorsTable = mycursor.fetchall()
   return render_template("Doctors.html", 
                           titlePage="Our Dentists", 
@@ -218,30 +225,31 @@ def Appointment():
     Tcost = 0
     PassOrNot = "text-danger"
 
-    if request.method == 'POST' and 'Fname' in request.form and 'Lname' in request.form and 'Age' in request.form and 'Gender' in request.form and 'Doctors' in request.form and 'Service' in request.form:
-        Fname = request.form['Fname']
-        Lname = request.form['Lname']
+    if request.method == 'POST' :
+        SSN = request.form['SSN']
+        FName = request.form['FName']
+        MidName = request.form['MidName']
+        LName = request.form['LName']
         Age = request.form['Age']
         Gender = request.form['Gender']
-        Doctors = request.form['Doctors']
-        Service = request.form['Service']
         userId = session['id']
-        Date = request.form['Date']
+        Doctor = request.form['Doctor']
+        DoctorName=Doctor.split()
+        Service = request.form['Service']
+        
 
         # Display Cost
-        mycursor.execute('SELECT Tcost FROM treatments where TName = %s',(Service,))
+        mycursor.execute('SELECT cost FROM treatments where Name = %s',(Service,))
         Tcost = mycursor.fetchone()
 
-        mycursor.execute('SELECT SSN FROM Doctors where D_Name = %s',(Doctors,))
-        DSSN = mycursor.fetchone()
+        mycursor.execute('SELECT Id FROM doctors where FName = %s and MidName = %s and LName = %s',(DoctorName[0],DoctorName[1],DoctorName[2]))
+        D_Id = mycursor.fetchone()
 
-        mycursor.execute('SELECT id FROM treatments where TName = %s',(Service,))
+        mycursor.execute('SELECT id FROM treatments where Name = %s',(Service,))
         ServiceId = mycursor.fetchone()
         
-        mycursor.execute('SELECT * FROM appointments')
-        mycursor.fetchall()
-        number_of_rows = mycursor.rowcount
-        mycursor.execute("INSERT INTO appointments VALUES (%s, %s, %s, %s, %s, %s, %s, %s,%s, %s)", (number_of_rows+1 ,Fname, Lname, Age, Gender, DSSN[0], ServiceId[0], userId, Date, "w" ))
+        mycursor.execute("INSERT INTO appointments(SSN, FName, MidName, LName, Age, Gender,  Status  , userId, DoctorID, ServiceID ) VALUES (%s, %s, %s, %s, %s, %s, %s,%s, %s, %s)", 
+                                                  (SSN, FName, MidName, LName, Age, Gender, "Waiting", userId, D_Id[0] , ServiceId[0] ))
         mydb.commit()
         msg = 'You have successfully booked an appointment!'
         PassOrNot = "text-success"
@@ -251,7 +259,7 @@ def Appointment():
     TreatTable = mycursor.fetchall()
 
     # Retrieve all doctors data
-    mycursor.execute("SELECT * FROM Doctors")
+    mycursor.execute("SELECT * FROM doctors")
     DoctorsTable = mycursor.fetchall()
     
     return render_template("Appointment.html", 
@@ -263,48 +271,49 @@ def Appointment():
                           PassOrNot=PassOrNot)
 
 
-# Scans And Problems
-@website.route("/Problem", methods=['GET', 'POST'])
-def Problem():
-    msg = ""
-    Tcost = 0
-    PassOrNot = "text-danger"
+# # Scans And Problems
+# @website.route("/Problem", methods=['GET', 'POST'])
+# def Problem():
+  # pass
+  # msg = ""
+  # Tcost = 0
+  # PassOrNot = "text-danger"
 
-    if request.method == 'POST':
-        
-        Image = request.files['image']
-        Age = request.form['Age']
-        Gender = request.form['Gender']
-        Doctors = request.form['Doctors']
-        userId = session['id']
-        Description = request.form['Description']
+  # if request.method == 'POST':
+      
+  #     Image = request.files['image']
+  #     Age = request.form['Age']
+  #     Gender = request.form['Gender']
+  #     Doctors = request.form['Doctors']
+  #     userId = session['id']
+  #     Description = request.form['Description']
 
-        mycursor.execute('SELECT SSN FROM Doctors where D_Name = %s',(Doctors,))
-        DSSN = mycursor.fetchone()
-        
-        
-        path = "static/img/UsersProfile/" + secure_filename(Image.filename)
-        Image.save(path)
-        
-        mycursor.execute("INSERT INTO appointments VALUES (%s, %s, %s, %s, %s, %s, %s)", (NULL, path, Age, Gender, DSSN[0], userId, Description ))
-        mydb.commit()
-        msg = 'You have successfully Send your problem, please wait until doctor respond!'
-        PassOrNot = "text-success"
+  #     mycursor.execute('SELECT SSN FROM Doctors where D_Name = %s',(Doctors,))
+  #     DSSN = mycursor.fetchone()
+      
+      
+  #     path = "static/img/UsersProfile/" + secure_filename(Image.filename)
+  #     Image.save(path)
+      
+  #     mycursor.execute("INSERT INTO appointments VALUES (%s, %s, %s, %s, %s, %s, %s)", (NULL, path, Age, Gender, DSSN[0], userId, Description ))
+  #     mydb.commit()
+  #     msg = 'You have successfully Send your problem, please wait until doctor respond!'
+  #     PassOrNot = "text-success"
 
-    # Retrieve all treatments data
-    mycursor.execute("SELECT * FROM treatments")
-    scansTable = mycursor.fetchall()
+  # # Retrieve all treatments data
+  # mycursor.execute("SELECT * FROM treatments")
+  # scansTable = mycursor.fetchall()
 
-    # Retrieve all doctors data
-    mycursor.execute("SELECT * FROM Doctors")
-    DoctorsTable = mycursor.fetchall()
-    
-    return render_template("scans.html", 
-                          titlePage="Problems", 
-                          DoctorsData=DoctorsTable, 
-                          scansTable=scansTable,
-                          msg=msg,
-                          PassOrNot=PassOrNot)
+  # # Retrieve all doctors data
+  # mycursor.execute("SELECT * FROM Doctors")
+  # DoctorsTable = mycursor.fetchall()
+  
+  # return render_template("scans.html", 
+  #                       titlePage="Problems", 
+  #                       DoctorsData=DoctorsTable, 
+  #                       scansTable=scansTable,
+  #                       msg=msg,
+  #                       PassOrNot=PassOrNot)
 
 
 # Register
@@ -313,21 +322,23 @@ def register():
     msg = ''
     PassOrNot = "text-danger"
     if request.method == 'POST' :
-        Fname = request.form['Fname']
-        Lname = request.form['Lname']
+        FName = request.form['FName']
+        MidName = request.form['MidName']
+        LName = request.form['LName']
+        Image = request.files["file"]
         username = request.form['username']
         password = request.form['password']
         repassword = request.form['repassword']
         email = request.form['email']
-        image = request.files["file"]
+        phone = request.form['Phone']
 
-        mycursor.execute('SELECT * FROM users WHERE username = %s', (username, ))
-        user = mycursor.fetchone()
-        mycursor.execute('SELECT * FROM users WHERE email = %s', (email, ))
-        emailAdd = mycursor.fetchone()
-        if user:
-            msg = 'username already exists !'
-        elif emailAdd :
+        mycursor.execute('SELECT * FROM users WHERE UserName = %s', (username, ))
+        NewUser = mycursor.fetchone()
+        mycursor.execute('SELECT * FROM users WHERE Email = %s', (email, ))
+        NewEmail = mycursor.fetchone()
+        if NewUser:
+            msg = 'Username already exists !'
+        elif NewEmail :
             msg = 'Email already exists !'
         elif not re.match(r'[A-Za-z0-9]+', username):
             msg = 'Username must contain only characters and numbers !'
@@ -336,13 +347,11 @@ def register():
         elif len(password) < 5 :
             msg = 'Weak Password !'
         else:
-            path = "static/img/UsersProfile/" + secure_filename(image.filename)
-            image.save(path)
+            path = "static/img/UsersProfile/" + secure_filename(Image.filename)
+            Image.save(path)
 
-            mycursor.execute('SELECT * FROM users')
-            mycursor.fetchall()
-            number_of_rows = mycursor.rowcount
-            mycursor.execute("INSERT INTO users VALUES (%s, %s, %s, %s, %s, %s, %s)", (number_of_rows+1 ,Fname, Lname, username, password, email, path))
+            mycursor.execute("INSERT INTO users(FName, MidName, LName, Image, UserName, Password, Email, phone) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)", 
+                                               (FName, MidName, LName, path, username, password, email, phone))
             mydb.commit()
             msg = 'Congratulation !! You have successfully registered.'
             PassOrNot = "text-success"
@@ -354,68 +363,70 @@ def register():
                             registered=PassOrNot, 
                             hidden="d-none")
 
+
 # User Profile
 @website.route("/profile", methods =['GET', 'POST'])
 def ProfilePage():
+  Treatments = []
+  Doctors = []
+  Users = []
   if session['username']:
+
     if session['doctor'] :
       # If doctor
-      mycursor.execute("select * from Appointments where DSSN = %s",(session['id'],))
+      mycursor.execute("select * from appointments where DoctorId = %s",(session['id'],))
       AppointmentsTable = mycursor.fetchall()
 
-      mycursor.execute('SELECT * FROM doctors WHERE D_email = %s', (session['username'], ))
+      mycursor.execute('SELECT * FROM doctors WHERE Email = %s', (session['username'], ))
       UserInfo = mycursor.fetchone()
 
-      UserProblems = []
-      UserDoctors = []
       for Appointment in AppointmentsTable :
-        mycursor.execute('SELECT * FROM users WHERE id = %s', (Appointment[7], ))
-        D_Name = mycursor.fetchone()
+        mycursor.execute('SELECT * FROM users WHERE id = %s', (Appointment[9], ))
+        U_Name = mycursor.fetchone()
         
-        mycursor.execute('SELECT * FROM treatments WHERE id = %s', (Appointment[6], ))
+        mycursor.execute('SELECT * FROM treatments WHERE id = %s', (Appointment[11], ))
         T_Name = mycursor.fetchone()
 
-        UserProblems.append(T_Name)
-        UserDoctors.append(D_Name)
+        Treatments.append(T_Name)
+        Users.append(U_Name)
 
     else:
       # If normal user
       if request.method == 'POST' :
         id = request.form['id']
         if request.form['status'] == 'Confirm':
-          mycursor.execute('Update appointments set App_status="s" WHERE id = %s', (id, ))
+          mycursor.execute('Update appointments set Status="Scheduled" WHERE id = %s', (id, ))
         elif request.form['status'] == 'Reject':
-          mycursor.execute('Update appointments set App_status="r" WHERE id = %s', (id, ))
+          mycursor.execute('Update appointments set Status="Refused" WHERE id = %s', (id, ))
       
         mydb.commit()
       
-      mycursor.execute("select * from Appointments where userId = %s",(session['id'],))
+      mycursor.execute("select * from Appointments where UserID = %s",(session['id'],))
       AppointmentsTable = mycursor.fetchall()
 
-      mycursor.execute('SELECT * FROM users WHERE username = %s', (session['username'], ))
+      mycursor.execute('SELECT * FROM users WHERE UserName = %s', (session['username'], ))
       UserInfo = mycursor.fetchone()
 
-      UserProblems = []
-      UserDoctors = []
       for Appointment in AppointmentsTable :
-        mycursor.execute('SELECT * FROM Doctors WHERE SSN = %s', (Appointment[5], ))
+        mycursor.execute('SELECT * FROM doctors WHERE id = %s', (Appointment[10], ))
         D_Name = mycursor.fetchone()
         
-        mycursor.execute('SELECT * FROM treatments WHERE id = %s', (Appointment[6], ))
+        mycursor.execute('SELECT * FROM treatments WHERE id = %s', (Appointment[11], ))
         T_Name = mycursor.fetchone()
 
-        UserProblems.append(T_Name)
-        UserDoctors.append(D_Name)
+        Treatments.append(T_Name)
+        Doctors.append(D_Name)
 
   return render_template("profile.html",
                         titlePage=session['username'], 
                         Info=UserInfo,
                         AppointmentsTable=AppointmentsTable,
-                        UserProblems=UserProblems,
-                        UserDoctors=UserDoctors )
+                        Treatments=Treatments,
+                        Doctors=Doctors,
+                        Users=Users)
 
 
-# Doctors
+# Contact Us
 @website.route("/Contact", methods=["GET", "POST"])
 def ContactUs():
   msg = ""
@@ -444,16 +455,6 @@ def ContactUs():
                               ActiveContact="active",
                               msg=msg)
   
-  
-# Logout
-@website.route('/logout')
-def logout():
-    session.pop('loggedin', None)
-    session.pop('id', None)
-    session.pop('username', None)
-    session.pop('doctor', None)
-
-    return redirect(url_for('HomePage'))
 
 # Rate Us
 @website.route("/Rate", methods=['GET', 'POST'])
@@ -467,13 +468,11 @@ def RateUs():
         message = request.form['message']
         userId = session['id']
         
-        mycursor.execute('SELECT * FROM rates')
-        mycursor.fetchall()
-        number_of_rows = mycursor.rowcount
-        mycursor.execute("INSERT INTO Rates VALUES (%s, %s, %s, %s)", (number_of_rows+1 ,rating, message, userId))
+        mycursor.execute("INSERT INTO Rates(rating, Review, UserID) VALUES (%s, %s, %s)", 
+                                           (rating, message, userId))
         mydb.commit()
 
-        msg = 'Thanks!'
+        msg = 'Thanks fou you!'
         PassOrNot = "text-success"
 
     # Retrieve all doctors data
@@ -485,6 +484,16 @@ def RateUs():
                           RateData=RatesTable,
                           msg=msg, 
                           PassOrNot=PassOrNot)
+
+# Logout
+@website.route('/logout')
+def logout():
+    session.pop('loggedin', None)
+    session.pop('id', None)
+    session.pop('username', None)
+    session.pop('doctor', None)
+
+    return redirect(url_for('HomePage'))
 
 #--------------------------------------------------------------------------#
 
@@ -500,50 +509,59 @@ def Admin():
       mycursor.execute('SELECT * FROM rates')
       Rates = mycursor.fetchall()
       Rates = [rate[1] for rate in Rates]
-      AvgOfRates = sum(Rates)/len(Rates)
+      if len(Rates) == 0 :
+        AvgOfRates = 0
+      else :
+        AvgOfRates = sum(Rates)/len(Rates)
 
       # Statistical Analysis Appointments
-      mycursor.execute('SELECT Count(id) FROM Appointments')
+      mycursor.execute('SELECT Count(id) FROM appointments')
       numOfApp = mycursor.fetchall()[0][0]
       
-      mycursor.execute('SELECT Count(id) FROM Appointments where App_status="s"')
+      mycursor.execute('SELECT Count(id) FROM appointments where Status="Scheduled"')
       numOfAppSucc = mycursor.fetchall()[0][0]
       
-      mycursor.execute('SELECT Count(id) FROM Appointments where App_status="a"')
+      mycursor.execute('SELECT Count(id) FROM appointments where Status="Accepted"')
       numOfAppAcc = mycursor.fetchall()[0][0]
 
-      mycursor.execute('SELECT Count(id) FROM Appointments where App_status="r"')
+      mycursor.execute('SELECT Count(id) FROM Appointments where Status="Refused"')
       numOfAppRef = mycursor.fetchall()[0][0]
 
       AppointmentsList = [numOfApp,numOfAppSucc,numOfAppAcc,numOfAppRef]
-      AppointmentsListPrecentage = [numOfAppSucc/numOfApp,numOfAppAcc/numOfApp,numOfAppRef/numOfApp]
+      if numOfApp == 0 :
+        AppointmentsListPrecentage = [0,0,0]
+      else :
+        AppointmentsListPrecentage = [numOfAppSucc/numOfApp,numOfAppAcc/numOfApp,numOfAppRef/numOfApp]
       
       # Statistical Analysis Doctors
-      mycursor.execute('SELECT Count(SSN) FROM doctors')
+      mycursor.execute('SELECT Count(id) FROM doctors')
       numOfDoctors = mycursor.fetchall()[0][0]
 
-      mycursor.execute('SELECT Count(SSN) FROM doctors where D_Age>=20 and D_Age<30')
+      mycursor.execute('SELECT Count(id) FROM doctors where Age>=20 and Age<30')
       numOfDoctors20 = mycursor.fetchall()[0][0]
 
-      mycursor.execute('SELECT Count(SSN) FROM doctors where D_Age>=30 and D_Age<40')
+      mycursor.execute('SELECT Count(id) FROM doctors where Age>=30 and Age<40')
       numOfDoctors30 = mycursor.fetchall()[0][0]
 
-      mycursor.execute('SELECT Count(SSN) FROM doctors where D_Age>=40 and D_Age<50')
+      mycursor.execute('SELECT Count(id) FROM doctors where Age>=40 and Age<50')
       numOfDoctors40 = mycursor.fetchall()[0][0]
 
-      mycursor.execute('SELECT Count(SSN) FROM doctors where D_Age>=50')
+      mycursor.execute('SELECT Count(id) FROM doctors where Age>=50')
       numOfDoctors50 = mycursor.fetchall()[0][0]
 
       DoctorsList = [numOfDoctors, numOfDoctors20, numOfDoctors30, numOfDoctors40, numOfDoctors50]
-      DoctorsListPrecentage = [numOfDoctors20/numOfDoctors, numOfDoctors30/numOfDoctors, numOfDoctors40/numOfDoctors, numOfDoctors50/numOfDoctors]
+      if numOfDoctors == 0 :
+        DoctorsListPrecentage = [0, 0, 0, 0]
+      else :
+        DoctorsListPrecentage = [numOfDoctors20/numOfDoctors, numOfDoctors30/numOfDoctors, numOfDoctors40/numOfDoctors, numOfDoctors50/numOfDoctors]
 
       # Statistical Analysis Services
-      mycursor.execute('select ServiceId, count(id) from appointments group by ServiceId order by ServiceId')
+      mycursor.execute('select ServiceID, COUNT(id) from appointments group by ServiceID order by ServiceID')
       ServicesListItems = mycursor.fetchall()
 
       ServicesDict = dict()
       for service in ServicesListItems:
-        mycursor.execute('select TName from treatments where id = %s', (service[0],))
+        mycursor.execute('select Name from treatments where id = %s', (service[0],))
         ServicesDict[mycursor.fetchall()[0][0]] = service[1]
 
       colors = ["color-brown","color-black","color-blue","color-green","color-yellow","color-orange","color-red"]
@@ -571,14 +589,17 @@ def login():
     # Output message if something goes wrong...
     msg = ''
     # Check if "username" and "password" POST requests exist (user submitted form)
-    if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
+    if request.method == 'POST':
         # Create variables for easy access
         username = request.form['username']
         password = request.form['password']
+        
         # Check if account exists using MySQL
-        mycursor.execute('SELECT * FROM admins WHERE username = %s AND password = %s', (username, password,))
+        mycursor.execute('SELECT * FROM admin WHERE UserName = %s AND Password = %s', (username, password,))
+        
         # Fetch one record and return result
         account = mycursor.fetchone()
+        
         # If account exists in accounts table in out database
         if account:
             # Create session data, we can access this data in other routes
@@ -615,18 +636,19 @@ def doctors():
       if request.method == 'POST' :
           SSN = request.form['SSN']
           file = request.files['file']
-          Name = request.form['Name']
-          Telephone = request.form['Telephone']
+          FName = request.form['FName']
+          MidName = request.form['MidName']
+          LName = request.form['LName']
+          Phone = request.form['Phone']
           Gender = request.form['Gender']
           Email = request.form['Email']
           Age = request.form['Age']
           Degree = request.form['Degree']
           Password = get_random_number()
-          Password = int(Password)
 
           mycursor.execute('SELECT * FROM doctors WHERE SSN = %s', (SSN, ))
           D_SSN = mycursor.fetchone()
-          mycursor.execute('SELECT * FROM doctors WHERE D_Email = %s', (Email, ))
+          mycursor.execute('SELECT * FROM doctors WHERE Email = %s', (Email, ))
           emailAdd = mycursor.fetchone()
 
           # Check if SSN is repeated
@@ -636,13 +658,20 @@ def doctors():
           elif emailAdd :
               msg = 'Email already exists !'
           # Check if name contains only characters
-          elif not re.match(r'[A-Za-z]+', Name):
+          elif not re.match(r'[A-Za-z]+', FName):
+              msg = 'First Name must contain only characters'
+          elif not re.match(r'[A-Za-z]+', MidName):
               msg = 'Name must contain only characters'
+          elif not re.match(r'[A-Za-z]+', LName):
+              msg = 'Last Name must contain only characters'
           else:
               path = "static/img/doctorsProfile/" + secure_filename(file.filename)
               file.save(path)
-              mycursor.execute("INSERT INTO doctors VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)", (SSN, Name, Gender, Email, Age, Degree,Telephone, Password, path))
+              
+              mycursor.execute("INSERT INTO doctors(SSN, FName, MidName, LName, Age, Gender, Phone, Email, Degree, Password, Image) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", 
+                                                   (SSN, FName, MidName, LName, Age, Gender, Phone, Email, Degree, Password, path))
               mydb.commit()
+              
               msg = 'You have successfully Added Doctor.'
               PassOrNot = "text-success"
       
@@ -665,23 +694,23 @@ def generalAdmin():
   if 'loggedinAdmin' in session:
     msg = ''
     if request.method == 'POST':
-        titlew = request.form['title']
-        icon = request.files['icon']
-        short = request.form['short']
-        telephone = request.form['telephone']
+        title = request.form['title']
         address = request.form['address']
         email = request.form['email']
-        long = request.form['long'] 
+        phone = request.form['phone']
+        short = request.form['short']
+        long = request.form['long']
+        icon = request.files['icon']
 
         path = "static/img/icon/icon.png" 
         icon.save(path)
 
-        mycursor.execute("UPDATE siteinfo SET title=%s, address=%s, email=%s, phone=%s, discr=%s, icon=%s, short=%s where id=1", (titlew, address, email, telephone, long, path, short))
+        mycursor.execute("UPDATE site_information SET Title=%s, Address=%s, Email=%s, Phone=%s, Short_description=%s, Long_description=%s, Icon=%s", (title, address, email, phone, short, long, path))
         mydb.commit()
         msg = 'Updated successfully, please restart the website to update the changes.'
 
     # Retrieve slider images
-    mycursor.execute("SELECT * FROM siteinfo")
+    mycursor.execute("SELECT * FROM site_information")
     siteinfo = mycursor.fetchone()
     
     return render_template('Admin/general.html', 
@@ -698,17 +727,16 @@ def sliderAdmin():
     if request.method == 'POST':
         file = request.files['file']
         title = request.form['title']
-        description = request.form['description']
-
-        mycursor.execute('SELECT * FROM slider')
-        mycursor.fetchall()
-        number_of_rows = mycursor.rowcount
+        Description = request.form['description']
 
         path = "static/img/slider/" + secure_filename(file.filename)
         file.save(path)
-        mycursor.execute("INSERT INTO slider VALUES (%s, %s, %s, %s)", (number_of_rows+1, path, title, description))
+        
+        mycursor.execute("INSERT INTO slider(Image, Title, Description) VALUES (%s, %s, %s)", 
+                                            (path,  title, Description))
         mydb.commit()
-        msg = 'Uploaded successfully'
+
+        msg = 'Image Uploaded successfully'
 
     # Retrieve slider images
     mycursor.execute("SELECT * FROM slider")
@@ -740,17 +768,18 @@ def servicesAdmin():
       PassOrNot = "text-danger"
       if request.method == 'POST' :
           Name = request.form['Name']
+          Image = request.files['file']
           Cost = request.form['Cost']
           Duration = request.form['Duration']
           Description = request.form['Description']
 
-          mycursor.execute("""SELECT * 
-                              FROM treatments;""")
+          path = "static/img/ServicesProfile/" + secure_filename(Image.filename)
+          Image.save(path)
 
-          mycursor.fetchall()
-          number_of_rows = mycursor.rowcount
-          mycursor.execute("INSERT INTO treatments VALUES (%s, %s, %s, %s, %s)", (number_of_rows+1 ,Name, Cost, Duration, Description))
+          mycursor.execute("INSERT INTO treatments(Image, Name, cost, Duration, Description) VALUES (%s, %s, %s, %s, %s)", 
+                                                  (path,  Name, Cost, Duration, Description))
           mydb.commit()
+
           msg = 'You Have Successfully Added New Service/Treatment.'
           PassOrNot = "text-success"
       
@@ -775,20 +804,36 @@ def appointmentsAdmin():
     if request.method == 'POST' :
         id = request.form['id']
         date = request.form['date']
-        if request.form['status'] == 'Accept':
-          print(id)
-          mycursor.execute('update appointments set App_status="a", App_date=%s WHERE id = %s', (date, id, ))
+        if request.form['status'] == 'Accepted':
+          mycursor.execute('update appointments set Status="Accepted", App_date=%s WHERE id = %s', (date, id, ))
         else:
-          mycursor.execute('update appointments set App_status="r" WHERE id = %s', (id, ))
+          mycursor.execute('update appointments set Status="Refused" WHERE id = %s', (id, ))
       
         mydb.commit()
 
     mycursor.execute("select * from Appointments")
     AppointmentsTable = mycursor.fetchall()
+    
+    Treatments = []
+    Doctors = []
+    Users = []
+
+    mycursor.execute("select * from Appointments where UserID = %s",(session['id'],))
+    AppointmentsTable = mycursor.fetchall()
+
+    for Appointment in AppointmentsTable :
+      mycursor.execute('SELECT * FROM doctors WHERE id = %s', (Appointment[10], ))
+      D_Name = mycursor.fetchone()
+      
+      mycursor.execute('SELECT * FROM treatments WHERE id = %s', (Appointment[11], ))
+      T_Name = mycursor.fetchone()
+
+      Treatments.append(T_Name)
+      Doctors.append(D_Name)
       
     return render_template('Admin/Appointments.html',
-                                  titlePage="Appointments Control Panel",
-                                  AppointmentsTable=AppointmentsTable)
+                            titlePage="Appointments Control Panel",
+                            AppointmentsTable=AppointmentsTable)
 
 #--------------------------------------------------------------------------#
 

@@ -17,8 +17,16 @@
             <table class="table">
               <tbody>
                 <tr>
-                  <th scope="row">Name :</th>
+                  <th scope="row">First Name :</th>
                   <td>{{ Info[1] }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Middle Name :</th>
+                  <td>{{ Info[2] }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Last Name :</th>
+                  <td>{{ Info[3] }}</td>
                 </tr>
                 <tr>
                   <th scope="row">Gender :</th>
@@ -47,9 +55,7 @@
               </tbody>
             </table>
           </div>
-          <object class="col-md-3 img-fluid img-thumbnail" data="{{ Info[8] }}" type="image/jpg">
-            <img class="img-fluid" src="{{ url_for('static', filename='img/default-image.jpg') }}" alt="{{ Info[1] }}" />
-          </object>
+          <img class="col-md-3 img-fluid img-thumbnail" src="{{ Info[8] }}" onerror="this.onerror=null ;this.src='{{ url_for('static', filename='img/default-image.jpg') }}'" alt="{{ Info[1] }}" />
         </div>
 
         <!-- seperation line -->  
@@ -74,7 +80,7 @@
               </thead>
               <tbody>
                   {% for Appointment in AppointmentsTable %}
-                    {% if Appointment[9] == "a" %}
+                    {% if Appointment[9] == "s" %}
                       <tr>
                         <th scope="row">{{Appointment[0]}}</th>
                         <td scope="row">{{Appointment[1]}}</td>
@@ -93,6 +99,7 @@
 
       {% else %}
       <!-- If normal user sign in -->
+        <!-- Information of profile -->
         <div class="row">
           <div class=" container col-md-3">
             <div class="list-group">
@@ -111,26 +118,29 @@
                   <td>{{ Info[1] }}</td>
                 </tr>
                 <tr>
-                  <th scope="row">Last Name :</th>
+                  <th scope="row">Middle Name :</th>
                   <td>{{ Info[2] }}</td>
                 </tr>
                 <tr>
-                  <th scope="row">Username :</th>
+                  <th scope="row">Last Name :</th>
                   <td>{{ Info[3] }}</td>
                 </tr>
                 <tr>
-                  <th scope="row">Email :</th>
+                  <th scope="row">Username :</th>
                   <td>{{ Info[5] }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Email :</th>
+                  <td>{{ Info[7] }}</td>
                 </tr>
               </tbody>
             </table>
           </div>
-          <object class="col-md-3 img-fluid img-thumbnail" data="{{ Info[6] }}" type="image/jpg">
-            <img class="img-fluid" src="{{ url_for('static', filename='img/default-image.jpg') }}" alt="{{ Info[3] }}" />
-          </object>
+          <img class="col-md-3 img-fluid img-thumbnail" src="{{ Info[4] }}" onerror="this.onerror=null ;this.src='{{ url_for('static', filename='img/default-image.jpg') }}'" alt="{{ Info[3] }}">
         </div>
         <!-- seperation line -->
         <div class="p-4"><hr></div>
+        <!-- Appointments -->
         <div class="row">
           <a class="text-decoration-none text-primary text-uppercase" data-bs-toggle="collapse" href="#collapse-Table" role="button" aria-expanded="false" aria-controls="collapse-Table">
             <h1 class="fw-bolder">Your Appointments</h1>
@@ -140,13 +150,15 @@
               <thead>
                 <tr>
                   <th scope="col">#</th>
+                  <th scope="col">SSN</th>
                   <th scope="col">Patient First Name</th>
+                  <th scope="col">Patient Middle Name</th>
                   <th scope="col">Patient Last Name</th>
                   <th scope="col">Age</th>
-                  <th scope="col">Gander</th>
-                  <th scope="col">Doctor name</th>
-                  <th scope="col">Problem</th>
+                  <th scope="col">Gender</th>
                   <th scope="col">Date</th>
+                  <th scope="col">Doctor name</th>
+                  <th scope="col">Service</th>
                   <th scope="col">Status</th>
                 </tr>
               </thead>
@@ -158,19 +170,27 @@
                       <td scope="row">{{Appointment[2]}}</td>
                       <td scope="row">{{Appointment[3]}}</td>
                       <td scope="row">{{Appointment[4]}}</td>
-                      <td scope="row">{{UserDoctors[loop.index-1][1]}}</td>
-                      <td scope="row">{{UserProblems[loop.index-1][1]}}</td>
-                      <td scope="row">{{Appointment[8]}}</td>
+                      <td scope="row">{{Appointment[5]}}</td>
+                      <td scope="row">{{Appointment[6]}}</td>
                       <td scope="row">
-                        {% if Appointment[9] == "s" %}
+                        {% if Appointment[7] == None %}
+                          NOT Scheduled
+                        {% else %}
+                          {{Appointment[7]}}
+                        {% endif %}
+                      </td>
+                      <td scope="row">{{Doctors[loop.index-1][2] + " " + Doctors[loop.index-1][3] + " " + Doctors[loop.index-1][4]}}</td>
+                      <td scope="row">{{Treatments[loop.index-1][2]}}</td>
+                      <td scope="row">
+                        {% if Appointment[8] == "Scheduled" %}
                           <i class="text-success fs-4 bi bi-check2"></i>
-                        {% elif  Appointment[9] == "a" %}
+                        {% elif  Appointment[8] == "Accepted" %}
                         <form action="{{ url_for('ProfilePage') }}" method="post">
                           <input class="visually-hidden" type="int" name="id" value="{{Appointment[0]}}">
                           <input name="status" type="submit" class="btn btn-success col-10 mt-1" value="Confirm">
                           <input name="status" type="submit" class="btn btn-danger col-10 mt-1" value="Reject">
                         </form>
-                        {% elif  Appointment[9] == "w" or Appointment[9] == "n" %}
+                        {% elif  Appointment[8] == "Waiting" %}
                           <i class="bi bi-hourglass"></i>
                         {% else %}
                           <i class="text-danger fs-4 bi bi-x"></i>
@@ -183,7 +203,7 @@
           </div>
         </div>
       
-        {% endif %}
+      {% endif %}
     </div>
 </main>
 
