@@ -31,16 +31,16 @@
                         <li class="nav-item nav-link {{ActiveAbout}}"><a class="nav-link" href="./About">About Us</a></li>
                         <li class="nav-item nav-link {{ActiveDoctors}}"><a class="nav-link" href="/Doctors">Our Dentists</a></li>
                         <li class="nav-item nav-link"><a class="nav-link" href="./#services">Our Services</a></li>
-                        <li class="nav-item nav-link"><a class="nav-link {{ActiveContact}}" href="./Contact">Contact Us</a></li>
+                        <li class="nav-item nav-link {{ActiveContact}}"><a class="nav-link" href="./Contact">Contact Us</a></li>
                     </ul>
                 </div>
                 <div>
                     {% if session.username %}
-                        <small class=" h6">Hi <a href="/profile" class=" link-primary fw-bold">{{session.username}}</a></small>
-                        <a href="{{ url_for('logout') }}" class="btn">Logout</a>
+                        <small class="fs-6 m-3">Hi <a href="/profile" class="link-primary">{{session.username}}</a></small>
+                        <a href="{{ url_for('logout') }}" class="btn btn-secondary">Logout</a>
                     {% else %}
-                        <a class="link-dark text-decoration-none" href="./#login">Login</a>      
-                        <a class="" href="{{ url_for('register') }}" class="btn">Dont't have an account?</a>
+                        <a class="btn btn-primary text-decoration-none" href="./#login">Login</a>      
+                        <a href="{{ url_for('register') }}" class="btn">Dont't have an account?</a>
                     {% endif %}
                 </div>
             </div>

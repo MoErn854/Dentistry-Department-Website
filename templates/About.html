@@ -10,7 +10,7 @@
           <img class="img-thumbnail img-fluid" src="{{ url_for('static', filename='img/about.jpg') }}"  >
         </div>
         <p class="lead col-md-6 ">
-          {{session.discr}}
+          {{session.discr|safe}}
         </p>
       </div>
     </div>

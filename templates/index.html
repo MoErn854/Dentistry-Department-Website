@@ -148,7 +148,13 @@
                 pointer-events: none;
             }
             </style>
-            <a href="/Appointment" class="book text-center card-link">Book an Appointment</a>
+            {% if session.username %} 
+              <a href="/Appointment" class="btn btn-primary text-center card-link">Book an Appointment</a>
+            {% else %}
+              <span class="d-inline-block" tabindex="0" data-toggle="tooltip" title="You must be a user!">
+              <a style="pointer-events: none;" href="/Appointment" class="btn btn-primary card-link disabled">Book an Appointment</a>
+            </span>
+            {% endif %}
           </div>
         </div>
       </div>

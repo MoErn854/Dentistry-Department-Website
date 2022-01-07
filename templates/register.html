@@ -6,10 +6,10 @@
   <div class="p-5 container">
     <h1 class="fw-bolder text-primary mb-4 text-center text-uppercase">Sign Up</h1>
     <div class="offset-md-1  col-md-10">
-      <form action="{{ url_for('register') }}" method="post" class="row g-3 needs-validation" novalidate>
-        <div class="col-md-4">
+      <form enctype=multipart/form-data action="{{ url_for('Problem') }}" method="post" class="row g-3 needs-validation" novalidate>
+        <div class="col-md-2">
           <label for="validationFName" class="form-label">First name</label>
-          <input name="Fname" id="Fname" type="text" class="form-control" id="validationFName" placeholder="First name" required>
+          <input name="Fname" id="Fname" type="text" class="form-control" placeholder="First name" required>
           <div class="valid-feedback">
             Looks good!
           </div>
@@ -17,9 +17,9 @@
             Please choose an invalid first name.
           </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-2">
           <label for="validationLName" class="form-label">Last name</label>
-          <input name="Lname" id="Lname" type="text" class="form-control" id="validationLName" placeholder="Last name" required>
+          <input name="Lname" id="Lname" type="text" class="form-control" placeholder="Last name" required>
           <div class="valid-feedback">
             Looks good!
           </div>
@@ -28,10 +28,20 @@
           </div>
         </div>
         <div class="col-md-4">
+          <label for="file" class="form-label">Image</label>
+          <input name="file" id="file" type="file" class="form-control">
+          <div class="valid-feedback">
+            Looks good!
+          </div>
+          <div class="invalid-feedback">
+            Please provide the same password.
+          </div>
+        </div>
+        <div class="col-md-4">
           <label for="validationUsername" class="form-label">Username</label>
           <div class="input-group has-validation">
             <span class="input-group-text" id="inputGroupPrepend">@</span>
-            <input name="username" id="username" type="text" class="form-control" id="validationUsername" placeholder="Username" aria-describedby="inputGroupPrepend" required>
+            <input name="username" id="username" type="text" class="form-control" placeholder="Username" required>
             <div class="valid-feedback">
               Looks good!
             </div>
@@ -42,7 +52,7 @@
         </div>
         <div class="col-md-6">
           <label for="validationEmail" class="form-label">Email</label>
-          <input name="email" id="email" type="Email" class="form-control" id="validationEmail" placeholder="Email" required>
+          <input name="email" id="email" type="Email" class="form-control" placeholder="Email" required>
           <div class="valid-feedback">
             Looks good!
           </div>
@@ -52,7 +62,7 @@
         </div>
         <div class="col-md-3">
           <label for="validationPass" class="form-label">Password</label>
-          <input name="password" id="password" type="password" class="form-control" id="validationPass" placeholder="Password" required>
+          <input name="password" id="password" type="password" class="form-control" placeholder="Password" required>
           <div class="valid-feedback">
             Looks good!
           </div>
@@ -62,12 +72,22 @@
         </div>
         <div class="col-md-3">
           <label for="validationRePass" class="form-label">Reapeat Password</label>
-          <input name="repassword" id="repassword" type="password" class="form-control" id="validationRePass" placeholder="Password" required>
+          <input name="repassword" type="password" class="form-control" placeholder="Password" required>
           <div class="valid-feedback">
             Looks good!
           </div>
           <div class="invalid-feedback">
             Please provide the same password.
+          </div>
+        </div>
+        <div class="col-md-4">
+          <label for="Phone" class="form-label">Phone</label>
+          <input name="Phone" id="Phone" type="text" class="form-control" placeholder="Phone" required>
+          <div class="valid-feedback">
+            Looks good!
+          </div>
+          <div class="invalid-feedback">
+            Please choose an invalid last name.
           </div>
         </div>
         <div class="col-12">

@@ -34,9 +34,15 @@
     <div class="row">
         <h2 class="fw-bolder text-primary mt-2 text-uppercase">Add Service</h2>
         <form action="{{ url_for('servicesAdmin') }}" method="post" class="row g-1 needs-validation">
-            <div class="col-12">
+            <div class="col-md-7">
                 <label for="Name" class="form-label">Name</label>
                 <input id="Name" name="Name" type="text" class="form-control" placeholder="Enter Name" required>
+            </div>
+            <div class="col-md-5">
+                <label for="Cost" class="form-label">Image</label>
+                <div class="input-group">
+                    <input id="file" name="file" type="file" class="form-control" required>
+                </div>
             </div>
             <div class="col-md-6">
                 <label for="Cost" class="form-label">Cost</label>

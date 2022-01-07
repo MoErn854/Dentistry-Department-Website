@@ -15,7 +15,8 @@
                         <th scope="col">#</th>
                         <th scope="col">SSN</th>
                         <th scope="col">image</th>
-                        <th scope="col">Name</th>
+                        <th scope="col">First Name</th>
+                        <th scope="col">Last Name</th>
                         <th scope="col">Gender</th>
                         <th scope="col">Email</th>
                         <th scope="col">Age</th>
@@ -29,7 +30,7 @@
                     <tr>
                         <th scope="row">{{loop.index}}</th>
                         <th scope="row">{{doctor[0]}}</th>
-                        <td><img class="imageTable" src="../{{doctor[8]}}" alt="{{doctor[1]}}"></td>
+                        <td><img class="imageTable" src="../{{doctor[9]}}" alt="{{doctor[1]}}"></td>
                         <td>{{doctor[1]}}</td>
                         <td>{{doctor[2]}}</td>
                         <td>{{doctor[3]}}</td>
@@ -37,6 +38,7 @@
                         <td>{{doctor[5]}}</td>
                         <td>{{doctor[6]}}</td>
                         <td>{{doctor[7]}}</td>
+                        <td>{{doctor[8]}}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -48,38 +50,42 @@
             Add Doctors
         </h2>
         <form enctype=multipart/form-data  action="{{ url_for('doctors') }}" method="post" class="row g-1 needs-validation">
-            <div class="col-md-2">
+            <div class="col-md-12">
                 <label for="SSN" class="form-label">SSN</label>
                 <input name="SSN" id="SSN" type="number" class="form-control" placeholder="Enter SSN" required>
             </div>
-            <div class="col-md-4">
-                <label for="Name" class="form-label">Name</label>
-                <input id="Name" name="Name" type="text" class="form-control" placeholder="Enter Name" required>
+            <div class="col-md-6">
+                <label for="FName" class="form-label">First Name</label>
+                <input id="FName" name="FName" type="text" class="form-control" placeholder="Enter First Name" required>
             </div>
-            <div class="col-md-5">
+            <div class="col-md-6">
+                <label for="LName" class="form-label">Last Name</label>
+                <input id="LName" name="LName" type="text" class="form-control" placeholder="Enter Last Name" required>
+            </div>
+            <div class="col-md-12">
                 <label for="file" class="form-label">Upload profile image</label>
                 <div class="input-group mb-3">
                     <input name="file" id="file" type="file" class="form-control" >
                     <label class="input-group-text" for="file">Upload</label>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-6">
                 <label for="Telephone" class="form-label">Telephone</label>
                 <input id="Telephone" name="Telephone" type="text" class="form-control" placeholder="Enter Telephone" required>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-6">
                 <label for="Email" class="form-label">Email</label>
                 <input id="Email" name="Email" type="email" class="form-control" placeholder="Enter Email" required>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-12">
                 <label for="Degree" class="form-label">Degree</label>
                 <input id="Degree" name="Degree" type="text" class="form-control" placeholder="Enter Degree" required>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-6">
                 <label for="Age" class="form-label">Age</label>
                 <input id="Age" name="Age" type="number" class="form-control" placeholder="Enter Age" required>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-6">
                 <label for="Gender" class="form-label">Gander</label>
                 <select name="Gender" id="Gender" class="form-select" id="validationGender" required>
                     <option selected disabled value="">Choose...</option>

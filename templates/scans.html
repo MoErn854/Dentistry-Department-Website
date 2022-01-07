@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block body %}
+
+<main>
+  <div style="box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;" class="bg-light p-5 container">
+    <h1 class="fw-bolder text-primary mb-4 text-center text-uppercase">Send your problem!</h1>
+    {% if session.username %}
+      <div>
+        <form enctype=multipart/form-data action="{{ url_for('Problem') }}" method="POST" class="row g-3 needs-validation" novalidate>
+          <div class="col-md-12">
+            <label for="image" class="form-label">Image</label>
+            <input name="image" id="image" type="file" class="form-control">
+          </div>
+          <div class="col-md-12">
+            <label for="Description" class="form-label">Description</label>
+            <textarea name="Description" id="Description" type="text" class="form-control" required></textarea>
+          </div>
+          <div class="col-md-12">
+            <label for="image" class="form-label">Age</label>
+            <input name="Age" id="Age" type="int" class="form-control" required>
+          </div>
+          <div class="col-md-12">
+            <label for="validationGender" class="form-label">Gender</label>
+            <select name="Gender" id="Gender" class="form-select" required>
+              <option selected disabled value="">Choose...</option>
+              <option>Male</option>
+              <option>Female</option>
+            </select>
+          </div>
+          <div class="col-md-12">
+            <label for="validationDoctor" class="form-label">Availables Doctors</label>
+            <select id="Doctors" name="Doctors" class="form-select" id="validationDoctor" required>
+              <option selected disabled value="">Choose...</option>
+              {% for doctor in DoctorsData %}
+                <option>{{ doctor[1] }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-4">
+            <button role="button" class="button-9 btn btn-primary" type="submit">Send</button>
+          </div>
+          <p class="text-center {{PassOrNot}}">{{ msg }}</p>
+        </form>
+      </div>
+    {% else %}
+        <h3>You must be a user !</h3>
+        <a href="{{ url_for('register') }}" class="btn">Dont't have an account?</a>
+    {% endif %}
+  </div>
+</main>
+
+{% endblock %}

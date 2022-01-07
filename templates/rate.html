@@ -5,14 +5,38 @@
   <div style="box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;" class="bg-light p-5 container">
     <h1 class="fw-bolder text-primary mb-4 text-center text-uppercase"><i style="color: #ffd700; font-size: 30px;" class="bi bi-star-fill"></i> Rate Us <i style="color: #ffd700; font-size: 30px;" class="bi bi-star-fill"></i></h1>
     {% if session.username %}
-      <div class="offset-md-1  col-md-10">
-        <form action="{{ url_for('RateUs') }}" method="POST" class="row g-3 needs-validation" novalidate>
-            <label for="validationFName" class="form-label lead">Rate Us</label>
-            <input name="rating" id="rating" class="rating" max="5" oninput="this.style.setProperty('--value', `${this.valueAsNumber}`)" step="0.5" style="--value:2.5" type="range" value="2.5">
+      <div>
+        <form action="{{ url_for('RateUs') }}" method="POST" class="needs-validation row container" novalidate>
+          
+          <div class="row align-items-center">
+            <div class="col-lg-12">
+              <div class="col-auto">
+                <label for="rating" class="col-form-label fw-light">Rate Your Experience</label>
+              </div>
+              <div class="col-auto">
+                <input name="rating" id="rating" class="rating col-lg-8;" max="5" oninput="this.style.setProperty('--value', `${this.valueAsNumber}`)" step="0.5" style="--value:2.5;--starsize: 2.0rem;" type="range" value="2.5">
+              </div>
+            </div>
+            <div class="col-auto">
+              <span class="form-text fw-bold">
+                Are you Satisfied with the service?
+              </span>
+            </div>
+          </div>
 
-            <label for="message" class="form-label lead mb-0">Share Us Your Experience</label>
-            <textarea name="message" id="message" type="text" class="form-control" required></textarea>
-          <button role="button" class="button-9 btn btn-primary" type="submit">Rate</button>
+          <div class="mt-3">
+            <div class="col-auto">
+              <textarea style="min-height: 150px;" name="message" id="message" type="text" class="form-control" required></textarea>
+            </div>
+            <div class="col-auto">
+              <span class="form-text fw-bold">
+                Tell us what we can improved
+              </span>
+            </div>
+          </div>
+          <div class="col-lg-2">
+            <button role="button" class="button-9 btn btn-primary" type="submit">Rate</button>
+          </div>
           <p class="text-center {{PassOrNot}}">{{ msg }}</p>
         </form>
       </div>
