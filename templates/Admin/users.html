@@ -9,27 +9,29 @@
             <table class="table table-striped table-hover">
                 <thead>
                     <tr>
-                        <th scope="col">#</th>
                         <th scope="col">id</th>
                         <th scope="col">image</th>
                         <th scope="col">Username</th>
                         <th scope="col">First name</th>
+                        <th scope="col">Middle name</th>
                         <th scope="col">Last name</th>
                         <th scope="col">Password</th>
                         <th scope="col">Email</th>
+                        <th scope="col">Phone</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for user in users %}
                     <tr>
-                        <th scope="row">{{loop.index}}</th>
                         <th scope="row">{{user[0]}}</th>
-                        <th scope="row"><img class="imageTable" src="../{{user[6]}}" alt="{{user[1]}}"></th>
+                        <th scope="row"><img class="imageTable img-thumbnail" src="../{{user[4]}}" alt="{{user[5]}}"></th>
+                        <td scope="row">{{user[5]}}</td>
                         <td scope="row">{{user[1]}}</td>
                         <td scope="row">{{user[2]}}</td>
                         <td scope="row">{{user[3]}}</td>
-                        <td scope="row">{{user[4]}}</td>
-                        <td scope="row">{{user[5]}}</td>
+                        <td scope="row">********</td>
+                        <td scope="row">{{user[7]}}</td>
+                        <td scope="row">{{user[8]}}</td>
                     </tr>
                     {% endfor %}
                 </tbody>

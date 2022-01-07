@@ -1,5 +1,6 @@
 #Imports
 from typing import Dict
+from dns.flags import RA
 from flask import Flask,flash, render_template, request, redirect, url_for, session
 import mysql.connector
 import re
@@ -124,6 +125,17 @@ def HomePage():
   mycursor.execute("SELECT * FROM treatments")
   TreatTable = mycursor.fetchall()
 
+  # Retrieve all Rates data
+  mycursor.execute("SELECT * FROM rates limit 10")
+  RatesTable = mycursor.fetchall()
+
+  RatesList = []
+  for rate in RatesTable :
+    rate = list(rate)
+    mycursor.execute("SELECT * FROM users where id=%s",(rate[2],))
+    rate[2] = mycursor.fetchall()[0][1]
+    RatesList.append(rate)
+
   msg = ""
   # If login
   if request.method == 'POST' :
@@ -156,7 +168,7 @@ def HomePage():
                           msg = msg, 
                           TreatData=TreatTable,
                           sliderImg=sliderImg,
-                          RatesTable=RatesTable,
+                          RatesTable=RatesList,
                           users=users)
     else :
       # If normal user
@@ -179,7 +191,7 @@ def HomePage():
                           msg = msg, 
                           TreatData=TreatTable,
                           sliderImg=sliderImg,
-                          RatesTable=RatesTable,
+                          RatesTable=RatesList,
                           users=users)
 
   else:
@@ -189,7 +201,7 @@ def HomePage():
                         msg = msg, 
                         TreatData=TreatTable,
                         sliderImg=sliderImg,
-                        RatesTable=RatesTable,
+                        RatesTable=RatesList,
                         users=users)
 
 
@@ -804,7 +816,7 @@ def appointmentsAdmin():
     if request.method == 'POST' :
         id = request.form['id']
         date = request.form['date']
-        if request.form['status'] == 'Accepted':
+        if request.form['status'] == 'Accept':
           mycursor.execute('update appointments set Status="Accepted", App_date=%s WHERE id = %s', (date, id, ))
         else:
           mycursor.execute('update appointments set Status="Refused" WHERE id = %s', (id, ))
@@ -814,26 +826,26 @@ def appointmentsAdmin():
     mycursor.execute("select * from Appointments")
     AppointmentsTable = mycursor.fetchall()
     
-    Treatments = []
-    Doctors = []
-    Users = []
+    AppointmentsList = []
+    for Appointment in AppointmentsTable:
+      Appointment = list(Appointment)
+      mycursor.execute("select UserName from users where id = %s",(Appointment[9],))
+      App_UserName = mycursor.fetchall()[0][0]
+      Appointment[9] = App_UserName
 
-    mycursor.execute("select * from Appointments where UserID = %s",(session['id'],))
-    AppointmentsTable = mycursor.fetchall()
+      mycursor.execute("select FName, MidName, LName from doctors where id = %s",(Appointment[10],))
+      App_DName = mycursor.fetchall()[0]
+      Appointment[10] = App_DName[0]  + " " + App_DName[1] + " " + App_DName[2]  
 
-    for Appointment in AppointmentsTable :
-      mycursor.execute('SELECT * FROM doctors WHERE id = %s', (Appointment[10], ))
-      D_Name = mycursor.fetchone()
-      
-      mycursor.execute('SELECT * FROM treatments WHERE id = %s', (Appointment[11], ))
-      T_Name = mycursor.fetchone()
+      mycursor.execute("select Name from treatments where id = %s",(Appointment[11],))
+      TreatName = mycursor.fetchall()[0][0]
+      Appointment[11] = TreatName
 
-      Treatments.append(T_Name)
-      Doctors.append(D_Name)
-      
+      AppointmentsList.append(Appointment)
+
     return render_template('Admin/Appointments.html',
                             titlePage="Appointments Control Panel",
-                            AppointmentsTable=AppointmentsTable)
+                            AppointmentsTable=AppointmentsList)
 
 #--------------------------------------------------------------------------#
 

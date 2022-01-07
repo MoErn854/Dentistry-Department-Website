@@ -105,7 +105,7 @@
                   <p>“{{ rate[1] }}.”</p>
                 </blockquote>
                 <figcaption class="blockquote-footer">
-                  <cite title="Source Title">{{ users[rate[3]][1] }}</cite>
+                  <cite title="Source Title">{{ rate[2] }}</cite>
                 </figcaption>
               </figure>
             </div>
@@ -133,14 +133,14 @@
       {% for treat in TreatData %}
       <div class="col">
         <div class="card">
-          <img src="{{ url_for('static', filename='img/slider/Dental.jpg') }}" class="card-img-top" alt="{{treat[1]}}">
+          <img style="max-height : 150px" src="{{ treat[1] }}" class="card-img-top" alt="{{treat[1]}}">
           <div class="card-body">
-            <h5 class="card-title">{{treat[1]}}</h5>
-            <p class="card-text">{{treat[4]}}</p>
+            <h5 class="card-title">{{treat[2]}}</h5>
+            <p class="card-text">{{treat[5]}}</p>
           </div>
           <ul class="list-group list-group-flush">
-            <li class="list-group-item">${{treat[2]}}</li>
-            <li class="list-group-item">{{treat[3]}} Sessions</li>
+            <li class="list-group-item">${{treat[3]}}</li>
+            <li class="list-group-item">{{treat[4]}} Sessions</li>
           </ul>
           <div class="card-body">
             <style>
