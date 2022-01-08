@@ -1,8 +1,46 @@
 # Dentist Clinic Website
+<hr>
 Computer systems(Database) (SBE230) - Fall 2021 - Web Project using Html, CSS, Js, Bootstrap, MySQL and Python.
+The website mainly made for dental department but you can edit the images and the words in the site by Admin page to fit any other department.
 
-![Website Capture](https://github.com/MoErn854/Dentistry-Department-Website/blob/main/Website.png)
+### Prerequisites
+<hr>
+1- python3
+[Install from here](https://www.python.org/downloads/)
+
+2- The Following Libraries
+```
+typing
+dns.flags
+flask
+mysql.connector
+re
+werkzeug.utils
+random
+string
+flask_wtf
+wtforms
+flask_mail
+json
+```
+**To install** :
+`pip install [library name]`
+
+### How to Run
+<hr>
+##### First : You need to run stomology-department.sql file to setup the database.
+
+##### Second : Edit the database information for connection (line 37).
+![Database Connection](https://github.com/MoErn854/Dentistry-Department-Website/blob/main/ReadMeimg/database.png)
+
+##### Third : Run main.py file by command :
+```
+cd [Folder Path]
+python3 main.py
+```
 
 Finally, you can go to http://127.0.0.1:9000/ and check your work.
 
-Enjoy :)
+**Enjoy :)**
+
+![Website Capture](https://github.com/MoErn854/Dentistry-Department-Website/blob/main/ReadMeimg/Website.png)
