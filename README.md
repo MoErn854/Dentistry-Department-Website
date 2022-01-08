@@ -4,10 +4,10 @@ The website mainly made for dental department but you can edit the images and th
 
 ### Prerequisites
 <hr>
-1- python3
-[Install from here](https://www.python.org/downloads/)
+1- python 3
+[Install](https://www.python.org/downloads/)
 
-2- The Following Libraries
+2- The Following Libraries :
 ```
 typing
 dns.flags
