@@ -4,7 +4,7 @@ The website mainly made for dental department but you can edit the images and th
 
 ### Prerequisites
 <hr>
-1- python 3
+1- python 3 
 [Install](https://www.python.org/downloads/)
 
 2- The Following Libraries :
@@ -39,7 +39,7 @@ cd [Folder Path]
 python3 main.py
 ```
 
-Finally, you can go to http://127.0.0.1:9000/ and check your work.
+Finally, you can go to http://127.0.0.1:9000/ .
 
 **Enjoy :)**
 
