@@ -1,5 +1,4 @@
 # Dentist Clinic Website
-<hr>
 Computer systems(Database) (SBE230) - Fall 2021 - Web Project using Html, CSS, Js, Bootstrap, MySQL and Python.
 The website mainly made for dental department but you can edit the images and the words in the site by Admin page to fit any other department.
 
@@ -28,12 +27,13 @@ json
 
 ### How to Run
 <hr>
-##### First : You need to run stomology-department.sql file to setup the database.
 
-##### Second : Edit the database information for connection (line 37).
+#### First : You need to run stomology-department.sql file to setup the database.
+
+#### Second : Edit the database information for connection (line 37).
 ![Database Connection](https://github.com/MoErn854/Dentistry-Department-Website/blob/main/ReadMeimg/database.png)
 
-##### Third : Run main.py file by command :
+#### Third : Run main.py file by command :
 ```
 cd [Folder Path]
 python3 main.py
