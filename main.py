@@ -10,6 +10,7 @@ import string
 from flask_wtf import FlaskForm
 from wtforms import StringField, BooleanField, TextAreaField, SubmitField
 from flask_mail import Mail, Message
+import json
 #--------------------------------------------------------------------------#
 
 """Classes"""
@@ -146,7 +147,7 @@ def HomePage():
 
     if doctor == 'on' :
       # If doctor
-      mycursor.execute('SELECT * FROM doctors WHERE D_Email = %s AND password = %s', (email, password, ))
+      mycursor.execute('SELECT * FROM doctors WHERE Email = %s AND password = %s', (email, password, ))
       doctor = mycursor.fetchone()
       if doctor:
         # If info of doctor is right
@@ -300,7 +301,7 @@ def Appointment():
   #     userId = session['id']
   #     Description = request.form['Description']
 
-  #     mycursor.execute('SELECT SSN FROM Doctors where D_Name = %s',(Doctors,))
+  #     mycursor.execute('SELECT SSN FROM Doctors where Name = %s',(Doctors,))
   #     DSSN = mycursor.fetchone()
       
       
@@ -376,14 +377,12 @@ def register():
                             hidden="d-none")
 
 
-# User Profile
+# Profile
 @website.route("/profile", methods =['GET', 'POST'])
 def ProfilePage():
-  Treatments = []
-  Doctors = []
-  Users = []
+  AppointmentsList = []
+  AppointmentsListJson = []
   if session['username']:
-
     if session['doctor'] :
       # If doctor
       mycursor.execute("select * from appointments where DoctorId = %s",(session['id'],))
@@ -393,14 +392,23 @@ def ProfilePage():
       UserInfo = mycursor.fetchone()
 
       for Appointment in AppointmentsTable :
-        mycursor.execute('SELECT * FROM users WHERE id = %s', (Appointment[9], ))
-        U_Name = mycursor.fetchone()
-        
-        mycursor.execute('SELECT * FROM treatments WHERE id = %s', (Appointment[11], ))
-        T_Name = mycursor.fetchone()
+        Appointment = list(Appointment)
+        mycursor.execute("select UserName from users where id = %s",(Appointment[9],))
+        App_UserName = mycursor.fetchall()[0][0]
+        Appointment[9] = App_UserName
 
-        Treatments.append(T_Name)
-        Users.append(U_Name)
+        mycursor.execute("select FName, MidName, LName from doctors where id = %s",(Appointment[10],))
+        App_DName = mycursor.fetchall()[0]
+        Appointment[10] = App_DName[0]  + " " + App_DName[1] + " " + App_DName[2]  
+
+        mycursor.execute("select Name from treatments where id = %s",(Appointment[11],))
+        TreatName = mycursor.fetchall()[0][0]
+        Appointment[11] = TreatName
+        
+        AppointmentsList.append(Appointment)
+        if Appointment[8] == "Scheduled" :
+          Appointment[7] = str(Appointment[7])
+          AppointmentsListJson.append(Appointment)
 
     else:
       # If normal user
@@ -416,26 +424,30 @@ def ProfilePage():
       mycursor.execute("select * from Appointments where UserID = %s",(session['id'],))
       AppointmentsTable = mycursor.fetchall()
 
-      mycursor.execute('SELECT * FROM users WHERE UserName = %s', (session['username'], ))
+      mycursor.execute('SELECT * FROM users WHERE Username = %s', (session['username'], ))
       UserInfo = mycursor.fetchone()
 
       for Appointment in AppointmentsTable :
-        mycursor.execute('SELECT * FROM doctors WHERE id = %s', (Appointment[10], ))
-        D_Name = mycursor.fetchone()
-        
-        mycursor.execute('SELECT * FROM treatments WHERE id = %s', (Appointment[11], ))
-        T_Name = mycursor.fetchone()
+        Appointment = list(Appointment)
+        mycursor.execute("select UserName from users where id = %s",(Appointment[9],))
+        App_UserName = mycursor.fetchall()[0][0]
+        Appointment[9] = App_UserName
 
-        Treatments.append(T_Name)
-        Doctors.append(D_Name)
+        mycursor.execute("select FName, MidName, LName from doctors where id = %s",(Appointment[10],))
+        App_DName = mycursor.fetchall()[0]
+        Appointment[10] = App_DName[0]  + " " + App_DName[1] + " " + App_DName[2]  
+
+        mycursor.execute("select Name from treatments where id = %s",(Appointment[11],))
+        TreatName = mycursor.fetchall()[0][0]
+        Appointment[11] = TreatName
+        
+        AppointmentsList.append(Appointment)
 
   return render_template("profile.html",
                         titlePage=session['username'], 
                         Info=UserInfo,
-                        AppointmentsTable=AppointmentsTable,
-                        Treatments=Treatments,
-                        Doctors=Doctors,
-                        Users=Users)
+                        AppointmentsTable=AppointmentsList,
+                        AppointmentsListJson=json.dumps(AppointmentsListJson))
 
 
 # Contact Us
@@ -520,7 +532,7 @@ def Admin():
       # Average of ratings
       mycursor.execute('SELECT * FROM rates')
       Rates = mycursor.fetchall()
-      Rates = [rate[1] for rate in Rates]
+      Rates = [rate[0] for rate in Rates]
       if len(Rates) == 0 :
         AvgOfRates = 0
       else :
@@ -817,7 +829,7 @@ def appointmentsAdmin():
         id = request.form['id']
         date = request.form['date']
         if request.form['status'] == 'Accept':
-          mycursor.execute('update appointments set Status="Accepted", App_date=%s WHERE id = %s', (date, id, ))
+          mycursor.execute('update appointments set Status="Accepted", date=%s WHERE id = %s', (date, id, ))
         else:
           mycursor.execute('update appointments set Status="Refused" WHERE id = %s', (id, ))
       
@@ -846,6 +858,36 @@ def appointmentsAdmin():
     return render_template('Admin/Appointments.html',
                             titlePage="Appointments Control Panel",
                             AppointmentsTable=AppointmentsList)
+
+
+@website.route('/Admin/Admins', methods=['GET', 'POST'])
+def Admins():
+  if 'loggedinAdmin' in session:
+    msg = ''
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        repassword = request.form['repassword']
+
+        if password == repassword :
+          msg = "Please, Enter the same password"
+        
+        mycursor.execute("INSERT INTO Admin(Username, Password) VALUES (%s, %s)", 
+                                            (username, password))
+        mydb.commit()
+
+        msg = 'Addded successfully'
+
+    # Retrieve slider images
+    mycursor.execute("SELECT * FROM Admin")
+    Admins = mycursor.fetchall()
+    return render_template('Admin/Admins.html', 
+                          msg=msg, 
+                          titlePage="Admins Table Control Panel",
+                          Admins=Admins)
+
+  return redirect(url_for('login'))
+
 
 #--------------------------------------------------------------------------#
 

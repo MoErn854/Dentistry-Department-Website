@@ -3,7 +3,7 @@
   <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <link rel="icon" href="{{ url_for('static', filename='img/icon/icon.png') }}">
 
@@ -12,15 +12,39 @@
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-icons.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/calender/main.css') }}" />
 
     <!-- Custom styles -->
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" >
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          var calendarEl = document.getElementById('calendar');
+          var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth', 
+          });
+          const AppointmentsData = {{ AppointmentsListJson|safe }};
+          for(let appointment of AppointmentsData){
+            var date = new Date(appointment[7] + 'T00:00:00'); // will be in local time
+            calendar.addEvent({
+              title: appointment[2] + " " + appointment[3] + " " + appointment[4],
+              start: date,
+              allDay: true
+            });
+          }
+          
+          calendar.render();
+        });
+      </script>
   </head>
   <body>
     <header>
         <nav style="z-index: 100; opacity: .96;box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;" class="p-lg-0 p-1 navbar navbar-expand-lg navbar-light bg-light fixed-top">
             <div class="container">
-                <a class="navbar-brand text-capitalize" href="./"><span class="fw-bolder text-primary">{{session.title}}</span></a>
+                <a class="navbar-brand text-capitalize" href="./">
+                    <img class="bi" height="24" src="{{ url_for('static', filename='img/icon/icon.png') }}" alt="{{session.title}}" title="{{session.title}}" />
+                    <span class="fw-bolder text-primary">{{session.title}}</span>
+                </a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ournavbar" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -83,6 +107,8 @@
     <script src="{{ url_for('static', filename='js/popper.min.js') }}" ></script>
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}" ></script>
     <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js//script.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/calender/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
   </body>
 </html>

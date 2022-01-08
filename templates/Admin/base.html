@@ -3,8 +3,9 @@
   <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
+    <link rel="icon" href="{{ url_for('static', filename='img/icon/icon.png') }}">
 
     <title>Dental Health | {{titlePage}}</title>
 
@@ -36,13 +37,16 @@
                         <a class="nav-link" aria-current="page" href="/Admin/General">General</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/Admin/doctors">Doctors</a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link" href="/Admin/slider">Slider images</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="/Admin/Admins">Admins</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="/Admin/users">Users</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Admin/doctors">Doctors</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/Admin/Services">Services</a>
@@ -81,12 +85,12 @@
                         <div class="{{hide}} list-group">
                             <a href="/Admin/Home" class="list-group-item list-group-item-action">Home</a>
                             <a href="/Admin/General" class="list-group-item list-group-item-action">General</a>
-                            <a href="/Admin/doctors" class="list-group-item list-group-item-action">Doctors</a>
                             <a href="/Admin/slider" class="list-group-item list-group-item-action">Slider</a>
+                            <a href="/Admin/Admins" class="list-group-item list-group-item-action">Admins</a>
                             <a href="/Admin/users" class="list-group-item list-group-item-action">Users</a>
+                            <a href="/Admin/doctors" class="list-group-item list-group-item-action">Doctors</a>
                             <a href="/Admin/Services" class="list-group-item list-group-item-action">Services</a>
                             <a href="/Admin/Appointemnts" class="list-group-item list-group-item-action">Appointments</a>
-                            
                         </div>
                     </div>
                 </div>
@@ -129,6 +133,6 @@
     <script src="{{ url_for('static', filename='js/popper.min.js') }}" ></script>
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}" ></script>
     <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js//script.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>    
   </body>
 </html>

@@ -1,5 +1,5 @@
 CREATE TABLE Admin(
-    id int Not NULL,
+    id int Not NULL Auto_Increment,
     UserName varchar(30),
     Password varchar(20),
     PRIMARY KEY(id)
@@ -75,7 +75,7 @@ CREATE TABLE Appointments(
     LName Varchar(20),
     Age int,
     Gender Varchar(20),
-    Date int ,
+    Date date ,
     Status Varchar(20),
     UserID int  Not NULL ,
     DoctorID int Not NULL,

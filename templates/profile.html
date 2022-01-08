@@ -12,50 +12,50 @@
               <a href="/profile" class="list-group-item list-group-item-action active">My information</a>
             </div>
           </div>
-          <div class="table-responsive col-md-6">
+          <div class="table-responsive col-md-5">
             <h1 class="fw-bolder text-primary text-uppercase">My Profile</h1>
             <table class="table">
               <tbody>
                 <tr>
                   <th scope="row">First Name :</th>
-                  <td>{{ Info[1] }}</td>
+                  <td>{{ Info[2] }}</td>
                 </tr>
                 <tr>
                   <th scope="row">Middle Name :</th>
-                  <td>{{ Info[2] }}</td>
+                  <td>{{ Info[3] }}</td>
                 </tr>
                 <tr>
                   <th scope="row">Last Name :</th>
-                  <td>{{ Info[3] }}</td>
-                </tr>
-                <tr>
-                  <th scope="row">Gender :</th>
-                  <td>{{ Info[2] }}</td>
-                </tr>
-                <tr>
-                  <th scope="row">Email :</th>
-                  <td>{{ Info[3] }}</td>
-                </tr>
-                <tr>
-                  <th scope="row">Age :</th>
                   <td>{{ Info[4] }}</td>
                 </tr>
                 <tr>
-                  <th scope="row">Degree :</th>
-                  <td>{{ Info[5] }}</td>
-                </tr>
-                <tr>
-                  <th scope="row">Telephone :</th>
+                  <th scope="row">Gender :</th>
                   <td>{{ Info[6] }}</td>
                 </tr>
                 <tr>
-                  <th scope="row">Password :</th>
+                  <th scope="row">Email :</th>
+                  <td>{{ Info[8] }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Age :</th>
+                  <td>{{ Info[5] }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Degree :</th>
+                  <td>{{ Info[9] }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Phone :</th>
                   <td>{{ Info[7] }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Password :</th>
+                  <td>******</td>
                 </tr>
               </tbody>
             </table>
           </div>
-          <img class="col-md-3 img-fluid img-thumbnail" src="{{ Info[8] }}" onerror="this.onerror=null ;this.src='{{ url_for('static', filename='img/default-image.jpg') }}'" alt="{{ Info[1] }}" />
+          <img class="col-md-4 img-fluid img-thumbnail" src="{{ Info[11] }}" onerror="this.onerror=null ;this.src='{{ url_for('static', filename='img/default-image.jpg') }}'" alt="{{ Info[1] }}" />
         </div>
 
         <!-- seperation line -->  
@@ -70,31 +70,54 @@
               <thead>
                 <tr>
                   <th scope="col">#</th>
-                  <th scope="col">Patient first name</th>
-                  <th scope="col">Patient last name</th>
+                  <th scope="col">SSN</th>
+                  <th scope="col">Patient First Name</th>
+                  <th scope="col">Patient Middle Name</th>
+                  <th scope="col">Patient Last Name</th>
                   <th scope="col">Age</th>
-                  <th scope="col">Gander</th>
-                  <th scope="col">Problem</th>
+                  <th scope="col">Gender</th>
+                  <th scope="col">Service</th>
                   <th scope="col">Date</th>
                 </tr>
               </thead>
               <tbody>
                   {% for Appointment in AppointmentsTable %}
-                    {% if Appointment[9] == "s" %}
+                    {% if Appointment[8] == "Scheduled" %}
                       <tr>
                         <th scope="row">{{Appointment[0]}}</th>
                         <td scope="row">{{Appointment[1]}}</td>
                         <td scope="row">{{Appointment[2]}}</td>
                         <td scope="row">{{Appointment[3]}}</td>
                         <td scope="row">{{Appointment[4]}}</td>
-                        <td scope="row">{{UserProblems[loop.index-1][1]}}</td>
-                        <td scope="row">{{Appointment[8]}}</td>
+                        <td scope="row">{{Appointment[5]}}</td>
+                        <td scope="row">{{Appointment[6]}}</td>
+                        <td scope="row">{{Appointment[11]}}</td>
+                        <td scope="row">{{Appointment[7]}}</td>
                       </tr>                    
                     {% endif %}
                   {% endfor %}
               </tbody>
             </table>
           </div>
+        </div>
+
+        <!-- seperation line -->  
+        <div class="p-4"><hr></div>
+
+        <div class="row">
+          <script>
+            {% for Appointment in AppointmentsTable %}
+              {% if Appointment[8] == "Scheduled" %}
+                      var date = new Date({{Appointment[7]}} + 'T00:00:00'); // will be in local time
+                      calendar.addEvent({
+                        title: 'Appointment',
+                        start: date,
+                        allDay: true
+                      });
+              {% endif %}
+            {% endfor %}
+          </script>
+          <div id='calendar'></div>
         </div>
 
       {% else %}
@@ -132,6 +155,10 @@
                 <tr>
                   <th scope="row">Email :</th>
                   <td>{{ Info[7] }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Phone :</th>
+                  <td>{{ Info[8] }}</td>
                 </tr>
               </tbody>
             </table>
@@ -174,13 +201,13 @@
                       <td scope="row">{{Appointment[6]}}</td>
                       <td scope="row">
                         {% if Appointment[7] == None %}
-                          NOT Scheduled
+                          NOT Scheduled yet
                         {% else %}
                           {{Appointment[7]}}
                         {% endif %}
                       </td>
-                      <td scope="row">{{Doctors[loop.index-1][2] + " " + Doctors[loop.index-1][3] + " " + Doctors[loop.index-1][4]}}</td>
-                      <td scope="row">{{Treatments[loop.index-1][2]}}</td>
+                      <td scope="row">{{Appointment[10]}}</td>
+                      <td scope="row">{{Appointment[11]}}</td>
                       <td scope="row">
                         {% if Appointment[8] == "Scheduled" %}
                           <i class="text-success fs-4 bi bi-check2"></i>
@@ -202,7 +229,6 @@
             </table>
           </div>
         </div>
-      
       {% endif %}
     </div>
 </main>
