@@ -1,26 +1,13 @@
 #Imports
-from typing import Dict
-from dns.flags import RA
-from flask import Flask,flash, render_template, request, redirect, url_for, session
-import mysql.connector
+from flask import Flask, render_template, request, redirect, url_for, session
 import re
 from werkzeug.utils import secure_filename
 import random
 import string
-from flask_wtf import FlaskForm
-from wtforms import StringField, BooleanField, TextAreaField, SubmitField
 from flask_mail import Mail, Message
 import json
+import db
 #--------------------------------------------------------------------------#
-
-"""Classes"""
-class ContactForm(FlaskForm):
-    name = StringField("Name")
-    email = StringField("Email")
-    subject = StringField("Subject")
-    message = TextAreaField("Message")
-    submit = SubmitField("Send")
-
 
 """Functions"""
 # Generate random password
@@ -34,45 +21,12 @@ def get_random_number():
 #--------------------------------------------------------------------------#
 
 # Connecting with Database
-mydb = mysql.connector.connect(
-  host="localhost",
-  user="root",
-  passwd="root",
-  database="stomology-dep"
-)
-# Initialize our cursor
-mycursor = mydb.cursor(buffered=True)
-
-#--------------------------------------------------------------------------#
+mydb, mycursor = db.mysql_connector()
 
 """Retrive Database Tables"""
-# Retrieve all information about site
-mycursor.execute("SELECT * FROM site_information")
-siteInfoTable = mycursor.fetchone()
-
-# Retrieve slider images
-mycursor.execute("SELECT * FROM slider")
-sliderImg = mycursor.fetchall()
-
-# Retrieve all doctors data
-mycursor.execute("SELECT * FROM doctors")
-DoctorsTable = mycursor.fetchall()
-
-# Retrieve all treatments data
-mycursor.execute("SELECT * FROM treatments")
-TreatTable = mycursor.fetchall()
-
-# Retrieve all Rates data
-mycursor.execute("SELECT * FROM rates limit 10")
-RatesTable = mycursor.fetchall()
-
-# Retrieve all information about app
-mycursor.execute("SELECT * FROM users")
-users = mycursor.fetchall()
+db_tables = db.retrive_tables(mycursor)
 
 #--------------------------------------------------------------------------#
-
-
 """Our Website"""
 website = Flask(__name__)
 website.secret_key = '**************' # Put your Secret_Key
@@ -84,54 +38,32 @@ website.config.update(dict(
     MAIL_PORT = 465,
     MAIL_USE_TLS = False,
     MAIL_USE_SSL = True,
-    MAIL_USERNAME = siteInfoTable[2],
+    MAIL_USERNAME = db_tables["site_information"][2],
     MAIL_PASSWORD = '**************' # Put your password of email
 ))
 mail = Mail(website)
 
-
-# Initilize Upload Settings
-UPLOAD_FOLDER = '/Static/img/' # {{ url_for('static', filename='img/') }}
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
-
-website.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-
 #--------------------------------------------------------------------------#
-
-
 
 """ Routes of Pages """
 # Home Page
 @website.route("/", methods =['GET', 'POST'])
 def HomePage():
 
+  # retrive all tables
+  db_tables = db.retrive_tables(mycursor)
+
   # Identify site's information
-  session['title'] = siteInfoTable[0]
-  session['address'] = siteInfoTable[1]
-  session['email'] = siteInfoTable[2]
-  session['phone'] = siteInfoTable[3]
-  session['short'] = siteInfoTable[4]
-  session['long'] = siteInfoTable[5]
+  session['title'] = db_tables["site_information"][0]
+  session['address'] = db_tables["site_information"][1]
+  session['email'] = db_tables["site_information"][2]
+  session['phone'] = db_tables["site_information"][3]
+  session['short'] = db_tables["site_information"][4]
+  session['long'] = db_tables["site_information"][5]
 
-  # Retrieve All slider's images
-  mycursor.execute("SELECT * FROM slider")
-  sliderImg = mycursor.fetchall()
-
-  # Retrieve all treatments' data
-  mycursor.execute("SELECT * FROM treatments")
-  TreatTable = mycursor.fetchall()
-
-  # Retrieve all Rates data
-  mycursor.execute("SELECT * FROM rates limit 10")
-  RatesTable = mycursor.fetchall()
 
   RatesList = []
-  for rate in RatesTable :
+  for rate in db_tables["rates"] :
     rate = list(rate)
     mycursor.execute("SELECT * FROM users where id=%s",(rate[2],))
     rate[2] = mycursor.fetchall()[0][1]
@@ -149,6 +81,7 @@ def HomePage():
       # If doctor
       mycursor.execute('SELECT * FROM doctors WHERE Email = %s AND password = %s', (email, password, ))
       doctor = mycursor.fetchone()
+      
       if doctor:
         # If info of doctor is right
           session['loggedin'] = True
@@ -167,10 +100,10 @@ def HomePage():
                           titlePage="Homepage", 
                           ActiveHome="active", 
                           msg = msg, 
-                          TreatData=TreatTable,
-                          sliderImg=sliderImg,
+                          TreatData=db_tables["treatments"],
+                          sliderImg=db_tables["slider"],
                           RatesTable=RatesList,
-                          users=users)
+                          users=db_tables["users"])
     else :
       # If normal user
       mycursor.execute('SELECT * FROM users WHERE email = %s AND password = %s', (email, password, ))
@@ -190,50 +123,51 @@ def HomePage():
                           titlePage="Homepage", 
                           ActiveHome="active", 
                           msg = msg, 
-                          TreatData=TreatTable,
-                          sliderImg=sliderImg,
+                          TreatData=db_tables["treatments"],
+                          sliderImg=db_tables["slider"],
                           RatesTable=RatesList,
-                          users=users)
+                          users=db_tables["users"])
 
   else:
     return render_template("index.html",
                         titlePage="Homepage", 
                         ActiveHome="active", 
                         msg = msg, 
-                        TreatData=TreatTable,
-                        sliderImg=sliderImg,
+                        TreatData=db_tables["treatments"],
+                        sliderImg=db_tables["slider"],
                         RatesTable=RatesList,
-                        users=users)
+                        users=db_tables["users"])
 
 
 # About Us
 @website.route("/About")
 def AboutUsPage():
+  # retrive all tables
+  db_tables = db.retrive_tables(mycursor)
+
   # Retrieve all information about app
-  mycursor.execute("SELECT * FROM site_information")
-  siteInfoTable = mycursor.fetchone()
   return render_template("about.html", 
                           titlePage="About Us", 
                           ActiveAbout="active",
-                          users=users)
-
-
+                          users=db_tables["users"])
 
 # Doctors
 @website.route("/Doctors")
 def DoctorsPage():
-  # Retrieve all doctors data
-  mycursor.execute("SELECT * FROM doctors")
-  DoctorsTable = mycursor.fetchall()
+  # retrive all tables
+  db_tables = db.retrive_tables(mycursor)
+
   return render_template("Doctors.html", 
                           titlePage="Our Dentists", 
                           ActiveDoctors="active",
-                          DoctorsData=DoctorsTable)
-
+                          DoctorsData=db_tables["doctors"])
 
 # Appointments
 @website.route("/Appointment", methods=['GET', 'POST'])
 def Appointment():
+    # retrive all tables
+    db_tables = db.retrive_tables(mycursor)
+  
     msg = ""
     Tcost = 0
     PassOrNot = "text-danger"
@@ -266,72 +200,21 @@ def Appointment():
         mydb.commit()
         msg = 'You have successfully booked an appointment!'
         PassOrNot = "text-success"
-
-    # Retrieve all treatments data
-    mycursor.execute("SELECT * FROM treatments")
-    TreatTable = mycursor.fetchall()
-
-    # Retrieve all doctors data
-    mycursor.execute("SELECT * FROM doctors")
-    DoctorsTable = mycursor.fetchall()
     
     return render_template("Appointment.html", 
                           titlePage="Book an appointment", 
-                          DoctorsData=DoctorsTable, 
-                          TreatData=TreatTable,
+                          DoctorsData=db_tables["doctors"], 
+                          TreatData=db_tables["treatments"],
                           cost=Tcost,
                           msg=msg,
                           PassOrNot=PassOrNot)
 
-
-# # Scans And Problems
-# @website.route("/Problem", methods=['GET', 'POST'])
-# def Problem():
-  # pass
-  # msg = ""
-  # Tcost = 0
-  # PassOrNot = "text-danger"
-
-  # if request.method == 'POST':
-      
-  #     Image = request.files['image']
-  #     Age = request.form['Age']
-  #     Gender = request.form['Gender']
-  #     Doctors = request.form['Doctors']
-  #     userId = session['id']
-  #     Description = request.form['Description']
-
-  #     mycursor.execute('SELECT SSN FROM Doctors where Name = %s',(Doctors,))
-  #     DSSN = mycursor.fetchone()
-      
-      
-  #     path = "static/img/UsersProfile/" + secure_filename(Image.filename)
-  #     Image.save(path)
-      
-  #     mycursor.execute("INSERT INTO appointments VALUES (%s, %s, %s, %s, %s, %s, %s)", (NULL, path, Age, Gender, DSSN[0], userId, Description ))
-  #     mydb.commit()
-  #     msg = 'You have successfully Send your problem, please wait until doctor respond!'
-  #     PassOrNot = "text-success"
-
-  # # Retrieve all treatments data
-  # mycursor.execute("SELECT * FROM treatments")
-  # scansTable = mycursor.fetchall()
-
-  # # Retrieve all doctors data
-  # mycursor.execute("SELECT * FROM Doctors")
-  # DoctorsTable = mycursor.fetchall()
-  
-  # return render_template("scans.html", 
-  #                       titlePage="Problems", 
-  #                       DoctorsData=DoctorsTable, 
-  #                       scansTable=scansTable,
-  #                       msg=msg,
-  #                       PassOrNot=PassOrNot)
-
-
 # Register
 @website.route('/register', methods =['GET', 'POST'])
 def register():
+    # retrive all tables
+    db_tables = db.retrive_tables(mycursor)
+  
     msg = ''
     PassOrNot = "text-danger"
     if request.method == 'POST' :
@@ -367,8 +250,12 @@ def register():
         elif len(password) < 5 :
             msg = 'Weak Password !'
         else:
-            path = "static/img/UsersProfile/" + secure_filename(Image.filename)
-            Image.save(path)
+
+            if Image.filename == '':
+              path = ""
+            else :
+              path = "static/img/UsersProfile/" + secure_filename(Image.filename)
+              Image.save(path)
 
             mycursor.execute("INSERT INTO users(FName, MidName, LName, Image, UserName, Password, Email, phone) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)", 
                                                (FName, MidName, LName, path, username, password, email, phone))
@@ -382,10 +269,12 @@ def register():
                             registered=PassOrNot, 
                             hidden="d-none")
 
-
 # Profile
 @website.route("/profile", methods =['GET', 'POST'])
 def ProfilePage():
+  # retrive all tables
+  db_tables = db.retrive_tables(mycursor)
+
   AppointmentsList = []
   AppointmentsListJson = []
   if session['username']:
@@ -455,19 +344,20 @@ def ProfilePage():
                         AppointmentsTable=AppointmentsList,
                         AppointmentsListJson=json.dumps(AppointmentsListJson))
 
-
 # Contact Us
 @website.route("/Contact", methods=["GET", "POST"])
 def ContactUs():
+  # retrive all tables
+  db_tables = db.retrive_tables(mycursor)
+
   msg = ""
-  form = ContactForm()
   if request.method == 'POST':
       name = request.form["name"]
       email = request.form["email"]
       subject = request.form["subject"]
       message = request.form["message"]
 
-      msg = Message(subject, sender=email, recipients=[siteInfoTable[3]])
+      msg = Message(subject, sender=email, recipients=[db_tables["site_information"][3]])
       msg.body = "From " + email + " :\n" + name + " says : \n" + message
       mail.send(msg)
       
@@ -475,20 +365,20 @@ def ContactUs():
       
       return render_template("contact.html", 
                               titlePage="Contact Us", 
-                              form=form,
                               ActiveContact="active",
                               msg=msg)
 
   return render_template("contact.html", 
                               titlePage="Contact Us", 
-                              form=form,
                               ActiveContact="active",
                               msg=msg)
   
-
 # Rate Us
 @website.route("/Rate", methods=['GET', 'POST'])
 def RateUs():
+    # retrive all tables
+    db_tables = db.retrive_tables(mycursor)
+  
     msg = ""
     PassOrNot = "text-danger"
 
@@ -506,7 +396,7 @@ def RateUs():
     
     return render_template("rate.html", 
                           titlePage="Rate Us", 
-                          RateData=RatesTable,
+                          RateData=db_tables["rates"],
                           msg=msg, 
                           PassOrNot=PassOrNot)
 
@@ -526,14 +416,15 @@ def logout():
 # Admin Page
 @website.route('/Admin/Home')
 def Admin():
+    # retrive all tables
+    db_tables = db.retrive_tables(mycursor)
+  
     # Check if Admin is loggedin
     if 'loggedinAdmin' in session:
 
       """ Statistical Analysis """
       # Average of ratings
-      mycursor.execute('SELECT * FROM rates')
-      Rates = mycursor.fetchall()
-      Rates = [rate[0] for rate in Rates]
+      Rates = [rate[0] for rate in db_tables["rates"]]
       if len(Rates) == 0 :
         AvgOfRates = 0
       else :
@@ -607,6 +498,8 @@ def Admin():
 
 @website.route('/Admin/', methods=['GET', 'POST'])
 def login():
+  # retrive all tables
+  db_tables = db.retrive_tables(mycursor)
 
   if 'loggedinAdmin' in session:
     return redirect(url_for('Admin'))
@@ -645,77 +538,82 @@ def login():
 
 @website.route('/Admin/logout')
 def logoutAdmin():
-    # Remove session data, this will log the user out
-   session.pop('loggedinAdmin', None)
-   session.pop('idAdmin', None)
-   session.pop('usernameAdmin', None)
-   # Redirect to login page
-   return redirect(url_for('login'))
+  # Remove session data, this will log the user out
+  session.pop('loggedinAdmin', None)
+  session.pop('idAdmin', None)
+  session.pop('usernameAdmin', None)
+  # Redirect to login page
+  return redirect(url_for('login'))
 
 @website.route('/Admin/doctors', methods=['GET', 'POST'])
 def doctors():
+  # retrive all tables
+  db_tables = db.retrive_tables(mycursor)
+
   # Check if user is loggedin
-    if 'loggedinAdmin' in session:
-      msg = ''
-      PassOrNot = "text-danger"
-      if request.method == 'POST' :
-          SSN = request.form['SSN']
-          file = request.files['file']
-          FName = request.form['FName']
-          MidName = request.form['MidName']
-          LName = request.form['LName']
-          Phone = request.form['Phone']
-          Gender = request.form['Gender']
-          Email = request.form['Email']
-          Age = request.form['Age']
-          Degree = request.form['Degree']
-          Password = get_random_number()
+  if 'loggedinAdmin' in session:
+    msg = ''
+    PassOrNot = "text-danger"
+    if request.method == 'POST' :
+        SSN = request.form['SSN']
+        file = request.files['file']
+        FName = request.form['FName']
+        MidName = request.form['MidName']
+        LName = request.form['LName']
+        Phone = request.form['Phone']
+        Gender = request.form['Gender']
+        Email = request.form['Email']
+        Age = request.form['Age']
+        Degree = request.form['Degree']
+        Password = get_random_number()
 
-          mycursor.execute('SELECT * FROM doctors WHERE SSN = %s', (SSN, ))
-          D_SSN = mycursor.fetchone()
-          mycursor.execute('SELECT * FROM doctors WHERE Email = %s', (Email, ))
-          emailAdd = mycursor.fetchone()
+        mycursor.execute('SELECT * FROM doctors WHERE SSN = %s', (SSN, ))
+        D_SSN = mycursor.fetchone()
+        mycursor.execute('SELECT * FROM doctors WHERE Email = %s', (Email, ))
+        emailAdd = mycursor.fetchone()
 
-          # Check if SSN is repeated
-          if D_SSN:
-              msg = 'SSN already exists !'
-          # Check if Email is repeated
-          elif emailAdd :
-              msg = 'Email already exists !'
-          # Check if name contains only characters
-          elif not re.match(r'[A-Za-z]+', FName):
-              msg = 'First Name must contain only characters'
-          elif not re.match(r'[A-Za-z]+', MidName):
-              msg = 'Name must contain only characters'
-          elif not re.match(r'[A-Za-z]+', LName):
-              msg = 'Last Name must contain only characters'
-          else:
+        # Check if SSN is repeated
+        if D_SSN:
+            msg = 'SSN already exists !'
+        # Check if Email is repeated
+        elif emailAdd :
+            msg = 'Email already exists !'
+        # Check if name contains only characters
+        elif not re.match(r'[A-Za-z]+', FName):
+            msg = 'First Name must contain only characters'
+        elif not re.match(r'[A-Za-z]+', MidName):
+            msg = 'Name must contain only characters'
+        elif not re.match(r'[A-Za-z]+', LName):
+            msg = 'Last Name must contain only characters'
+        else:
+            if file.filename == '':
+              path = ""
+            else :
               path = "static/img/doctorsProfile/" + secure_filename(file.filename)
               file.save(path)
-              
-              mycursor.execute("INSERT INTO doctors(SSN, FName, MidName, LName, Age, Gender, Phone, Email, Degree, Password, Image) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", 
-                                                   (SSN, FName, MidName, LName, Age, Gender, Phone, Email, Degree, Password, path))
-              mydb.commit()
-              
-              msg = 'You have successfully Added Doctor.'
-              PassOrNot = "text-success"
-      
-      # Update all doctors data
-      mycursor.execute("SELECT * FROM Doctors")
-      DoctorsTable = mycursor.fetchall()
+            
+            mycursor.execute("INSERT INTO doctors(SSN, FName, MidName, LName, Age, Gender, Phone, Email, Degree, Password, Image) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", 
+                                                  (SSN, FName, MidName, LName, Age, Gender, Phone, Email, Degree, Password, path))
+            mydb.commit()
+            
+            msg = 'You have successfully Added Doctor.'
+            PassOrNot = "text-success"
+    
+    # User is loggedin show them the home page  
+    return render_template('Admin/doctors.html',
+                          registered=PassOrNot, 
+                          msg=msg, 
+                          DoctorsData=db_tables["doctors"],
+                          titlePage="Doctors Control Panel")
 
-      # User is loggedin show them the home page  
-      return render_template('Admin/doctors.html',
-                            registered=PassOrNot, 
-                            msg=msg, 
-                            DoctorsData=DoctorsTable,
-                            titlePage="Doctors Control Panel")
-
-    # User is not loggedin redirect to login page
-    return redirect(url_for('login'))
+  # User is not loggedin redirect to login page
+  return redirect(url_for('login'))
 
 @website.route('/Admin/General', methods=['GET', 'POST'])
 def generalAdmin():
+  # retrive all tables
+  db_tables = db.retrive_tables(mycursor)
+
   if 'loggedinAdmin' in session:
     msg = ''
     if request.method == 'POST':
@@ -727,26 +625,28 @@ def generalAdmin():
         long = request.form['long']
         icon = request.files['icon']
 
-        path = "static/img/icon/icon.png" 
-        icon.save(path)
+        if icon.filename == '':
+          path = ""
+        else :
+          path = "static/img/icon/icon.png" 
+          icon.save(path)
 
         mycursor.execute("UPDATE site_information SET Title=%s, Address=%s, Email=%s, Phone=%s, Short_description=%s, Long_description=%s, Icon=%s", (title, address, email, phone, short, long, path))
         mydb.commit()
         msg = 'Updated successfully, please restart the website to update the changes.'
-
-    # Retrieve slider images
-    mycursor.execute("SELECT * FROM site_information")
-    siteinfo = mycursor.fetchone()
     
     return render_template('Admin/general.html', 
                           msg=msg,
                           titlePage="Site Informtion Control Panel",
-                          siteinfo=siteinfo)
+                          siteinfo=db_tables["site_information"])
 
   return redirect(url_for('login'))
 
 @website.route('/Admin/slider', methods=['GET', 'POST'])
 def sliderAdmin():
+  # retrive all tables
+  db_tables = db.retrive_tables(mycursor)
+
   if 'loggedinAdmin' in session:
     msg = ''
     if request.method == 'POST':
@@ -754,8 +654,11 @@ def sliderAdmin():
         title = request.form['title']
         Description = request.form['description']
 
-        path = "static/img/slider/" + secure_filename(file.filename)
-        file.save(path)
+        if file.filename == '':
+          path = ""
+        else :
+          path = "static/img/slider/" + secure_filename(file.filename)
+          file.save(path)
         
         mycursor.execute("INSERT INTO slider(Image, Title, Description) VALUES (%s, %s, %s)", 
                                             (path,  title, Description))
@@ -763,106 +666,106 @@ def sliderAdmin():
 
         msg = 'Image Uploaded successfully'
 
-    # Retrieve slider images
-    mycursor.execute("SELECT * FROM slider")
-    sliderImg = mycursor.fetchall()
     return render_template('Admin/Slider.html', 
                           msg=msg, 
                           titlePage="Slider Control Panel",
-                          sliderImg=sliderImg)
+                          sliderImg=db_tables["slider"])
 
   return redirect(url_for('login'))
 
 @website.route('/Admin/users', methods=['GET', 'POST'])
 def usersAdmin():
+  # retrive all tables
+  db_tables = db.retrive_tables(mycursor)
+
   if 'loggedinAdmin' in session:    
-    # Retrieve slider images
-    mycursor.execute("SELECT * FROM users")
-    users = mycursor.fetchall()
     return render_template('Admin/users.html', 
                           titlePage="Users", 
-                          users=users)
+                          users=db_tables["users"])
 
   return redirect(url_for('login'))
 
 @website.route('/Admin/Services', methods=['GET', 'POST'])
 def servicesAdmin():
-  # Check if user is loggedin
-    if 'loggedinAdmin' in session:
-      msg = ''
-      PassOrNot = "text-danger"
-      if request.method == 'POST' :
-          Name = request.form['Name']
-          Image = request.files['file']
-          Cost = request.form['Cost']
-          Duration = request.form['Duration']
-          Description = request.form['Description']
+  # retrive all tables
+  db_tables = db.retrive_tables(mycursor)
 
+  # Check if user is loggedin
+  if 'loggedinAdmin' in session:
+    msg = ''
+    PassOrNot = "text-danger"
+    if request.method == 'POST' :
+        Name = request.form['Name']
+        Image = request.files['file']
+        Cost = request.form['Cost']
+        Duration = request.form['Duration']
+        Description = request.form['Description']
+
+        if Image.filename == '':
+            path = ""
+        else :
           path = "static/img/ServicesProfile/" + secure_filename(Image.filename)
           Image.save(path)
 
-          mycursor.execute("INSERT INTO treatments(Image, Name, cost, Duration, Description) VALUES (%s, %s, %s, %s, %s)", 
-                                                  (path,  Name, Cost, Duration, Description))
-          mydb.commit()
+        mycursor.execute("INSERT INTO treatments(Image, Name, cost, Duration, Description) VALUES (%s, %s, %s, %s, %s)", 
+                                                (path,  Name, Cost, Duration, Description))
+        mydb.commit()
 
-          msg = 'You Have Successfully Added New Service/Treatment.'
-          PassOrNot = "text-success"
-      
-      # Update all doctors data
-      mycursor.execute("""SELECT * 
-                          FROM treatments;""")
+        msg = 'You Have Successfully Added New Service/Treatment.'
+        PassOrNot = "text-success"
+    
+    # User is loggedin show them the home page  
+    return render_template('Admin/services.html',
+                          titlePage="Doctors Control Panel",
+                          registered=PassOrNot, 
+                          msg=msg, 
+                          servicesData=db_tables["treatments"])
 
-      servicesData = mycursor.fetchall()
-
-      # User is loggedin show them the home page  
-      return render_template('Admin/services.html',
-                            titlePage="Doctors Control Panel",
-                            registered=PassOrNot, 
-                            msg=msg, 
-                            servicesData=servicesData)
-
-    # User is not loggedin redirect to login page
-    return redirect(url_for('login'))
+  # User is not loggedin redirect to login page
+  return redirect(url_for('login'))
 
 @website.route('/Admin/Appointemnts', methods=['GET', 'POST'])
 def appointmentsAdmin():
-    if request.method == 'POST' :
-        id = request.form['id']
-        date = request.form['date']
-        if request.form['status'] == 'Accept':
-          mycursor.execute('update appointments set Status="Accepted", date=%s WHERE id = %s', (date, id, ))
-        else:
-          mycursor.execute('update appointments set Status="Refused" WHERE id = %s', (id, ))
-      
-        mydb.commit()
+  # retrive all tables
+  db_tables = db.retrive_tables(mycursor)
 
-    mycursor.execute("select * from Appointments")
-    AppointmentsTable = mycursor.fetchall()
+  if request.method == 'POST' :
+      id = request.form['id']
+      date = request.form['date']
+      if request.form['status'] == 'Accept':
+        mycursor.execute('update appointments set Status="Accepted", date=%s WHERE id = %s', (date, id, ))
+      else:
+        mycursor.execute('update appointments set Status="Refused" WHERE id = %s', (id, ))
     
-    AppointmentsList = []
-    for Appointment in AppointmentsTable:
-      Appointment = list(Appointment)
-      mycursor.execute("select UserName from users where id = %s",(Appointment[9],))
-      App_UserName = mycursor.fetchall()[0][0]
-      Appointment[9] = App_UserName
+      mydb.commit()
+  
+  AppointmentsList = []
+  for Appointment in db_tables["appointments"]:
+    Appointment = list(Appointment)
+    mycursor.execute("select UserName from users where id = %s",(Appointment[9],))
+    App_UserName = mycursor.fetchall()[0][0]
+    Appointment[9] = App_UserName
 
-      mycursor.execute("select FName, MidName, LName from doctors where id = %s",(Appointment[10],))
-      App_DName = mycursor.fetchall()[0]
-      Appointment[10] = App_DName[0]  + " " + App_DName[1] + " " + App_DName[2]  
+    mycursor.execute("select FName, MidName, LName from doctors where id = %s",(Appointment[10],))
+    App_DName = mycursor.fetchall()[0]
+    Appointment[10] = App_DName[0]  + " " + App_DName[1] + " " + App_DName[2]  
 
-      mycursor.execute("select Name from treatments where id = %s",(Appointment[11],))
-      TreatName = mycursor.fetchall()[0][0]
-      Appointment[11] = TreatName
+    mycursor.execute("select Name from treatments where id = %s",(Appointment[11],))
+    TreatName = mycursor.fetchall()[0][0]
+    Appointment[11] = TreatName
 
-      AppointmentsList.append(Appointment)
+    AppointmentsList.append(Appointment)
 
-    return render_template('Admin/Appointments.html',
-                            titlePage="Appointments Control Panel",
-                            AppointmentsTable=AppointmentsList)
+  return render_template('Admin/Appointments.html',
+                          titlePage="Appointments Control Panel",
+                          AppointmentsTable=AppointmentsList)
 
 
 @website.route('/Admin/Admins', methods=['GET', 'POST'])
 def Admins():
+  # retrive all tables
+  db_tables = db.retrive_tables(mycursor)
+
   if 'loggedinAdmin' in session:
     msg = ''
     if request.method == 'POST':
@@ -879,13 +782,10 @@ def Admins():
 
         msg = 'Addded successfully'
 
-    # Retrieve slider images
-    mycursor.execute("SELECT * FROM Admin")
-    Admins = mycursor.fetchall()
     return render_template('Admin/Admins.html', 
                           msg=msg, 
                           titlePage="Admins Table Control Panel",
-                          Admins=Admins)
+                          Admins=db_tables["admin"])
 
   return redirect(url_for('login'))
 
