@@ -1,138 +1,86 @@
-<!doctype html>
-<html lang="en" class="h-100">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <link rel="icon" href="{{ url_for('static', filename='img/icon/icon.png') }}">
+{% extends 'main.html' %}
+{% block main %}
 
-    <title>Dental Health | {{titlePage}}</title>
-
-    <!-- Bootstrap core CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-icons.css') }}">
-    
-    <!-- Charts CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/charts.css') }}">
-
-    <!-- Custom styles -->
-    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" >
-  </head>
-  <body style="padding-top: 0px;">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="/Admin/Home">
-                <span class="fw-bolder text-primary">{{session.title}}</span> <span class="text-secondary">Control Panal</span>
-            </a>
-            <button class="{{hide}} navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0 d-lg-none {{hide}}">
-                    <li class="nav-item">
-                        <a class="nav-link" aria-current="page" href="/Admin/Home">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" aria-current="page" href="/Admin/General">General</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/Admin/slider">Slider images</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/Admin/Admins">Admins</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/Admin/users">Users</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/Admin/doctors">Doctors</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/Admin/Services">Services</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/Admin/Appointemnts">Appointments</a>
-                    </li>
-                </ul>
-                <div>
-                    {% if session.usernameAdmin %}
-                        <small class="fw-bolder">Hi, <span class="text-primary">{{session.usernameAdmin}}</span></small>
-                        <a href="{{ url_for('logoutAdmin') }}" class="btn link-primary">Logout</a>
-                    {% endif %}
-                </div>
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/Admin/Home">
+            <span class="fw-bolder text-primary">{{session.title}}</span> <span class="text-secondary">Control Panal</span>
+        </a>
+        <button class="{{hide}} navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0 d-lg-none {{hide}}">
+                <li class="nav-item">
+                    <a class="nav-link" aria-current="page" href="/Admin/Home">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" aria-current="page" href="/Admin/General">General</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/Admin/slider">Slider images</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/Admin/Admins">Admins</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/Admin/users">Users</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/Admin/doctors">Doctors</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/Admin/Services">Services</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/Admin/Appointemnts">Appointments</a>
+                </li>
+            </ul>
+            <div>
+                {% if session.usernameAdmin %}
+                    <small class="fw-bolder">Hi, <span class="text-primary">{{session.usernameAdmin}}</span></small>
+                    <a href="{{ url_for('logoutAdmin') }}" class="btn link-primary">Logout</a>
+                {% endif %}
             </div>
         </div>
-    </nav>
+    </div>
+</nav>
 
-    <div class="clearfix"></div>
+<div class="clearfix"></div>
 
-    <main>
-        <div class="p-5 container-fluid">    
-            <main class="p-5 main-Admin">
-                <div class="row">
-                    <div class="
-                    {% if login %}
-                        col-md-12
-                    {% else %}
-                        col-md-9
-                    {% endif %}
-                    ">
-                      {% block body %}
-                      {% endblock %}
-                    </div>
-                    <div class="col-md-3 sm-none mt-2">
-                        <div class="{{hide}} list-group">
-                            <a href="/Admin/Home" class="list-group-item list-group-item-action">Home</a>
-                            <a href="/Admin/General" class="list-group-item list-group-item-action">General</a>
-                            <a href="/Admin/slider" class="list-group-item list-group-item-action">Slider</a>
-                            <a href="/Admin/Admins" class="list-group-item list-group-item-action">Admins</a>
-                            <a href="/Admin/users" class="list-group-item list-group-item-action">Users</a>
-                            <a href="/Admin/doctors" class="list-group-item list-group-item-action">Doctors</a>
-                            <a href="/Admin/Services" class="list-group-item list-group-item-action">Services</a>
-                            <a href="/Admin/Appointemnts" class="list-group-item list-group-item-action">Appointments</a>
-                        </div>
+<main>
+    <div class="p-5 container-fluid">    
+        <main class="p-5 main-Admin">
+            <div class="row">
+                <div class="
+                {% if login %}
+                    col-md-12
+                {% else %}
+                    col-md-9
+                {% endif %}
+                ">
+                    {% block body %}
+                    {% endblock %}
+                </div>
+                <div class="col-md-3 sm-none mt-2">
+                    <div class="{{hide}} list-group">
+                        <a href="/Admin/Home" class="list-group-item list-group-item-action">Home</a>
+                        <a href="/Admin/General" class="list-group-item list-group-item-action">General</a>
+                        <a href="/Admin/slider" class="list-group-item list-group-item-action">Slider</a>
+                        <a href="/Admin/Admins" class="list-group-item list-group-item-action">Admins</a>
+                        <a href="/Admin/users" class="list-group-item list-group-item-action">Users</a>
+                        <a href="/Admin/doctors" class="list-group-item list-group-item-action">Doctors</a>
+                        <a href="/Admin/Services" class="list-group-item list-group-item-action">Services</a>
+                        <a href="/Admin/Appointemnts" class="list-group-item list-group-item-action">Appointments</a>
                     </div>
                 </div>
-                
-            </main>
-        </div>
-    </main>
-    
-    <div class="clearfix"></div>
-    
-    <!-- FOOTER -->
-    <!-- FOOTER -->
-    <footer>
-        <div class="container">
-            <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top p-1">
-              <div class="col-md-4 d-flex align-items-center">
-                <a href="/" class="mb-3 me-2 mb-md-0 text-muted text-decoration-none lh-1">
-                    <img class="bi" height="24" src="{{ url_for('static', filename='img/icon/icon.png') }}" alt="{{session.title}}" title="{{session.title}}" />
-                </a>
-                <span class="text-muted">
-                   &copy; 2021 – 2022 Department
-                </span>
-              </div>
-          
-              <ul class="nav col-md-4 justify-content-end list-unstyled d-flex">
-                <li class="ms-3">
-                    <a class="text-muted" href="https://github.com/MoErn854/Dentistry-Department-Website.git">
-                        <i style="font-size: 30px;" class="bi bi-github">
-                            <use xlink:href="#github"></use>
-                        </i>
-                    </a>
-                </li>
-              </ul>
-            </footer>
-          </div>
-    </footer>
+            </div>
+            
+        </main>
+    </div>
+</main>
 
-    <!-- Bootstrap JS -->
-    <script src="{{ url_for('static', filename='js/jquery-3.2.1.slim.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/popper.min.js') }}" ></script>
-    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}" ></script>
-    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>    
-  </body>
-</html>
+<div class="clearfix"></div>
+    
+{% endblock %}
+
