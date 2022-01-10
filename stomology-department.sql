@@ -26,7 +26,7 @@ Title Varchar(100),
     Email Varchar(100),
     Phone varchar(20) ,
     Short_description Varchar(500),
-    Long_description Varchar(1000),
+    Long_description long varchar,
     Icon Varchar(50)
 );
 CREATE TABLE Slider(

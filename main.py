@@ -1,26 +1,13 @@
 #Imports
-from typing import Dict
-from dns.flags import RA
-from flask import Flask,flash, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session
 import re
 from werkzeug.utils import secure_filename
 import random
 import string
-from flask_wtf import FlaskForm
-from wtforms import StringField, BooleanField, TextAreaField, SubmitField
 from flask_mail import Mail, Message
 import json
 import db
 #--------------------------------------------------------------------------#
-
-"""Classes"""
-class ContactForm(FlaskForm):
-    name = StringField("Name")
-    email = StringField("Email")
-    subject = StringField("Subject")
-    message = TextAreaField("Message")
-    submit = SubmitField("Send")
-
 
 """Functions"""
 # Generate random password
@@ -55,18 +42,6 @@ website.config.update(dict(
     MAIL_PASSWORD = '**************' # Put your password of email
 ))
 mail = Mail(website)
-
-
-# Initilize Upload Settings
-UPLOAD_FOLDER = '/Static/img/' # {{ url_for('static', filename='img/') }}
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
-
-website.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
 
 #--------------------------------------------------------------------------#
 
@@ -275,8 +250,12 @@ def register():
         elif len(password) < 5 :
             msg = 'Weak Password !'
         else:
-            path = "static/img/UsersProfile/" + secure_filename(Image.filename)
-            Image.save(path)
+
+            if Image.filename == '':
+              path = ""
+            else :
+              path = "static/img/UsersProfile/" + secure_filename(Image.filename)
+              Image.save(path)
 
             mycursor.execute("INSERT INTO users(FName, MidName, LName, Image, UserName, Password, Email, phone) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)", 
                                                (FName, MidName, LName, path, username, password, email, phone))
@@ -372,7 +351,6 @@ def ContactUs():
   db_tables = db.retrive_tables(mycursor)
 
   msg = ""
-  form = ContactForm()
   if request.method == 'POST':
       name = request.form["name"]
       email = request.form["email"]
@@ -387,13 +365,11 @@ def ContactUs():
       
       return render_template("contact.html", 
                               titlePage="Contact Us", 
-                              form=form,
                               ActiveContact="active",
                               msg=msg)
 
   return render_template("contact.html", 
                               titlePage="Contact Us", 
-                              form=form,
                               ActiveContact="active",
                               msg=msg)
   
@@ -610,8 +586,11 @@ def doctors():
         elif not re.match(r'[A-Za-z]+', LName):
             msg = 'Last Name must contain only characters'
         else:
-            path = "static/img/doctorsProfile/" + secure_filename(file.filename)
-            file.save(path)
+            if file.filename == '':
+              path = ""
+            else :
+              path = "static/img/doctorsProfile/" + secure_filename(file.filename)
+              file.save(path)
             
             mycursor.execute("INSERT INTO doctors(SSN, FName, MidName, LName, Age, Gender, Phone, Email, Degree, Password, Image) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", 
                                                   (SSN, FName, MidName, LName, Age, Gender, Phone, Email, Degree, Password, path))
@@ -646,8 +625,11 @@ def generalAdmin():
         long = request.form['long']
         icon = request.files['icon']
 
-        path = "static/img/icon/icon.png" 
-        icon.save(path)
+        if icon.filename == '':
+          path = ""
+        else :
+          path = "static/img/icon/icon.png" 
+          icon.save(path)
 
         mycursor.execute("UPDATE site_information SET Title=%s, Address=%s, Email=%s, Phone=%s, Short_description=%s, Long_description=%s, Icon=%s", (title, address, email, phone, short, long, path))
         mydb.commit()
@@ -672,8 +654,11 @@ def sliderAdmin():
         title = request.form['title']
         Description = request.form['description']
 
-        path = "static/img/slider/" + secure_filename(file.filename)
-        file.save(path)
+        if file.filename == '':
+          path = ""
+        else :
+          path = "static/img/slider/" + secure_filename(file.filename)
+          file.save(path)
         
         mycursor.execute("INSERT INTO slider(Image, Title, Description) VALUES (%s, %s, %s)", 
                                             (path,  title, Description))
@@ -716,8 +701,11 @@ def servicesAdmin():
         Duration = request.form['Duration']
         Description = request.form['Description']
 
-        path = "static/img/ServicesProfile/" + secure_filename(Image.filename)
-        Image.save(path)
+        if Image.filename == '':
+            path = ""
+        else :
+          path = "static/img/ServicesProfile/" + secure_filename(Image.filename)
+          Image.save(path)
 
         mycursor.execute("INSERT INTO treatments(Image, Name, cost, Duration, Description) VALUES (%s, %s, %s, %s, %s)", 
                                                 (path,  Name, Cost, Duration, Description))
