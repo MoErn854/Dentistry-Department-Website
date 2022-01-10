@@ -247,7 +247,7 @@ def Appointment():
         Gender = request.form['Gender']
         userId = session['id']
         Doctor = request.form['Doctor']
-        DoctorName=Doctor.split()
+        DoctorName = Doctor.split()
         Service = request.form['Service']
         
 
@@ -347,12 +347,19 @@ def register():
 
         mycursor.execute('SELECT * FROM users WHERE UserName = %s', (username, ))
         NewUser = mycursor.fetchone()
+        
         mycursor.execute('SELECT * FROM users WHERE Email = %s', (email, ))
         NewEmail = mycursor.fetchone()
+
+        mycursor.execute('SELECT * FROM users WHERE Phone = %s', (phone, ))
+        NewPhone = mycursor.fetchone()
+        
         if NewUser:
             msg = 'Username already exists !'
         elif NewEmail :
             msg = 'Email already exists !'
+        elif NewPhone :
+            msg = 'Phone already exists !'
         elif not re.match(r'[A-Za-z0-9]+', username):
             msg = 'Username must contain only characters and numbers !'
         elif not repassword == password :
@@ -369,10 +376,9 @@ def register():
             msg = 'Congratulation !! You have successfully registered.'
             PassOrNot = "text-success"
 
-
     return render_template('register.html', 
-                            titlePage="Sign Up" , 
-                            msg=msg, 
+                            titlePage="Sign Up",
+                            msg=msg,
                             registered=PassOrNot, 
                             hidden="d-none")
 
@@ -444,7 +450,7 @@ def ProfilePage():
         AppointmentsList.append(Appointment)
 
   return render_template("profile.html",
-                        titlePage=session['username'], 
+                        titlePage=session['username'],
                         Info=UserInfo,
                         AppointmentsTable=AppointmentsList,
                         AppointmentsListJson=json.dumps(AppointmentsListJson))
@@ -484,7 +490,6 @@ def ContactUs():
 @website.route("/Rate", methods=['GET', 'POST'])
 def RateUs():
     msg = ""
-    Tcost = 0
     PassOrNot = "text-danger"
 
     if request.method == 'POST' :
@@ -498,10 +503,6 @@ def RateUs():
 
         msg = 'Thanks fou you!'
         PassOrNot = "text-success"
-
-    # Retrieve all doctors data
-    mycursor.execute("SELECT * FROM Rates")
-    RatesTable = mycursor.fetchall()
     
     return render_template("rate.html", 
                           titlePage="Rate Us", 

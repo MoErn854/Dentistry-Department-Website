@@ -1,3 +1,5 @@
+CREATE DATABASE stomology-dep;
+
 CREATE TABLE Admin(
     id int Not NULL Auto_Increment,
     UserName varchar(30),
