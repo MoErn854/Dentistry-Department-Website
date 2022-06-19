@@ -2,7 +2,7 @@
 
 A responsive full stack web application with administration panel and dentistry appointment booking system.
 
-### Features:
+## Features
 
 - Sign Up & Login
 - The application enable the user to make an appointment in specific date.
