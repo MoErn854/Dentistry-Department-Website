@@ -1,6 +1,17 @@
 # Dentist Clinic Website
-Computer systems(Database) (SBE230) - Fall 2021 - Web Project using Html, CSS, Js, Bootstrap, MySQL and Python.
-The website mainly made for dental department but you can edit the images and the words in the site by Admin page to fit any other department.
+
+A responsive full stack web application with administration panel and dentistry appointment booking system.
+
+### Features:
+
+- Sign Up & Login
+- The application enable the user to make an appointment in specific date.
+- Contact us forms for any complains or special request.
+- The application is synchronized with calender for doctors.
+- The application use static files, file uploads
+- Administration panal:
+  - The admin can edit the appointments, accept & refuse it, assign it to the doctors.
+  - Statistical analysis for the admin entry.
 
 ### Prerequisites
 <hr>
