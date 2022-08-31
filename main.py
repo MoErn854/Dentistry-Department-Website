@@ -29,7 +29,7 @@ db_tables = db.retrive_tables(mycursor)
 #--------------------------------------------------------------------------#
 """Our Website"""
 website = Flask(__name__)
-website.secret_key = '**************' # Put your Secret_Key
+website.secret_key = 'hlzgzxpzlllkgzrn' # Put your Secret_Key
 
 
 # Initilize contact us information
@@ -38,8 +38,8 @@ website.config.update(dict(
     MAIL_PORT = 465,
     MAIL_USE_TLS = False,
     MAIL_USE_SSL = True,
-    MAIL_USERNAME = db_tables["site_information"][2],
-    MAIL_PASSWORD = '**************' # Put your password of email
+    MAIL_USERNAME = 'mohamed.ahmedfrg.2002@gmail.com',
+    MAIL_PASSWORD = 'hlzgzxpzlllkgzrn' # Put your password of email
 ))
 mail = Mail(website)
 
@@ -357,7 +357,7 @@ def ContactUs():
       subject = request.form["subject"]
       message = request.form["message"]
 
-      msg = Message(subject, sender=email, recipients=[db_tables["site_information"][3]])
+      msg = Message(subject=subject, sender=email, recipients=[db_tables["site_information"][2]])
       msg.body = "From " + email + " :\n" + name + " says : \n" + message
       mail.send(msg)
       
@@ -391,7 +391,7 @@ def RateUs():
                                            (rating, message, userId))
         mydb.commit()
 
-        msg = 'Thanks fou you!'
+        msg = 'Thanks for you!'
         PassOrNot = "text-success"
     
     return render_template("rate.html", 

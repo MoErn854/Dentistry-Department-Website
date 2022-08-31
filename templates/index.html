@@ -51,7 +51,7 @@
 
 <div class="seperate"></div>
 
-<main class="cover-bg" style="background: url({{ url_for('static', filename='img/background1.png') }});">
+<main class="cover-bg" style="background: url({{ url_for('static', filename='img/bg/bgDown0.png') }});">
   <div class="container text-start">
     <div class="row">
       <div class="sectionMain col-md-8">
@@ -62,17 +62,17 @@
           </blockquote>
         </figure>
       </div>
-      <img src="{{ url_for('static', filename='img/teeth.gif') }}" alt="teeth1" class="img-fluid col-md-4">
+      <img src="{{ url_for('static', filename='img/Home/img0.gif') }}" alt="teeth1" class="img-fluid col-md-4">
     </div>
   </div>
 </main>
 
 <div class="seperate"></div>
 
-<main class="cover-bg" style="background: url({{ url_for('static', filename='img/background1-svg.png') }});">
+<main class="cover-bg" style="background: url({{ url_for('static', filename='img/bg/bgUp0.png') }});">
   <div class="container text-end">
     <div class="row">
-      <img src="{{ url_for('static', filename='img/index1.jpg') }}" class="img-fluid col-md-5">
+      <img src="{{ url_for('static', filename='img/Home/img1.jpg') }}" class="img-fluid col-md-5">
       <div class="sectionMain col-md-7">
         <h1 class="text-dark text-uppercase">Why Choose to {{session.title}}?</h1>
         <ul class="lead text-start list-group">
@@ -88,7 +88,7 @@
 
 <div class="seperate"></div>
 
-<main class="{% if RatesTable|length == 0 %}d-none{% endif %} p-5 cover-bg" style="background: url({{ url_for('static', filename='img/testimonial-bg.webp') }});">
+<main class="{% if RatesTable|length == 0 %}d-none{% endif %} p-5 cover-bg" style="background: url({{ url_for('static', filename='img/bg/bg.webp') }});">
   <div class="p-5 container text-center">
     <h1 class="fw-bolder text-primary text-uppercase">What Patients Are Saying</h1>
     <div id="carouselContent" class="carousel slide" data-ride="carousel">
@@ -125,7 +125,7 @@
 
 <div class="{% if RatesTable|length == 0 %}d-none{% endif %} seperate"></div>
 
-<main class="cover-bg {% if TreatData|length == 0 %}d-none{% endif %}" style="background: url({{ url_for('static', filename='img/background1.svg') }});" id="services">  
+<main class="cover-bg {% if TreatData|length == 0 %}d-none{% endif %}" style="background: url({{ url_for('static', filename='img/bg/bgDown1.svg') }});" id="services">  
   <div class="p-5 container text-center">
     <h1 class="fw-bolder text-dark text-uppercase">TREATMENTS AND SERVICES</h1>
     <div class="p-3"></div>
@@ -165,7 +165,7 @@
 
 <div class="{% if TreatData|length == 0 %}d-none{% endif %} seperate"></div>
 
-<main class="cover-bg" style="background: url({{ url_for('static', filename='img/background.svg') }});">
+<main class="cover-bg" style="background: url({{ url_for('static', filename='img/bg/bgUp1.svg') }});">
   <div class="container">
     <div class="row">
       {% if not session.username %}
