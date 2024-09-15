@@ -54,4 +54,4 @@ Finally, you can go to http://127.0.0.1:9000/ .
 
 **Enjoy :)**
 
-![Website Capture](https://github.com/MohdFarag/Dentistry-Department-Website/blob/main/ReadMeimg/Website.png)
+![Website Capture](https://github.com/MohdFarag/Dentistry-Department-Website/blob/main/ReadMe/Website.png)
