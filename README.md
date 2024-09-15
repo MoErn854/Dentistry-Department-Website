@@ -42,7 +42,7 @@ json
 ### First : You need to run [SQL/stomology-dep.sql] file to setup the database.
 
 ### Second : Edit the database information for connection (db.py file).
-![Database Connection](https://github.com/MoErn854/Dentistry-Department-Website/blob/main/ReadMe/database.png)
+![Database Connection](https://github.com/MohdFarag/Dentistry-Department-Website/blob/main/ReadMe/database.png)
 
 ### Third : Run main.py file by command :
 ```
@@ -54,4 +54,4 @@ Finally, you can go to http://127.0.0.1:9000/ .
 
 **Enjoy :)**
 
-![Website Capture](https://github.com/MoErn854/Dentistry-Department-Website/blob/main/ReadMeimg/Website.png)
+![Website Capture](https://github.com/MohdFarag/Dentistry-Department-Website/blob/main/ReadMeimg/Website.png)
